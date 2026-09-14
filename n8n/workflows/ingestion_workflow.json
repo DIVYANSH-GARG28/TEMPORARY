@@ -1,0 +1,95 @@
+{
+  "name": "Dataset Ingestion & Validation",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webhook/dataset",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Webhook Ingestion",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://backend:8000/api/datasets",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{$json.query.name}}"
+            },
+            {
+              "name": "source_type",
+              "value": "={{$json.query.source_type}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Trigger FastAPI Validation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://backend:8000/api/reconciliation/trigger",
+        "method": "POST",
+        "options": {}
+      },
+      "name": "Trigger Spatial Reconciliation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        650,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Ingestion": {
+      "main": [
+        [
+          {
+            "node": "Trigger FastAPI Validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger FastAPI Validation": {
+      "main": [
+        [
+          {
+            "node": "Trigger Spatial Reconciliation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {}
+}
