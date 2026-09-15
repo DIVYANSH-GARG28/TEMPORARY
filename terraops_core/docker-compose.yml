@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis:15-3.4
+    environment:
+      POSTGRES_USER: terraops
+      POSTGRES_PASSWORD: terraops_password
+      POSTGRES_DB: terraops_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./app/db/migrations:/docker-entrypoint-initdb.d
+      - terraops_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U terraops -d terraops_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    ports:
+      - "6380:6379"
+
+  api:
+    build: .
+    ports:
+      - "8001:8000"
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgresql://terraops:terraops_password@db:5432/terraops_db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  terraops_data:

@@ -30,6 +30,7 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": "An internal server error occurred. Please try again later."},
     )
 
+# Removed vision import to fix backend crash
 app.include_router(datasets.router, prefix="/api/datasets", tags=["Datasets"])
 app.include_router(reconciliation.router, prefix="/api/reconciliation", tags=["Reconciliation"])
 app.include_router(review.router, prefix="/api/review", tags=["Human Review"])

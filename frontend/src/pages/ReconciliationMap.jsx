@@ -10,12 +10,22 @@ const API = 'http://localhost:8000/api';
 
 function FitBounds({ geojson }) {
   const map = useMap();
+  const hasFitted = useRef(false);
+  
   useEffect(() => {
-    if (!geojson?.features?.length) return;
+    if (!geojson?.features?.length) {
+        hasFitted.current = false;
+        return;
+    }
+    if (hasFitted.current) return;
+    
     import('leaflet').then(L => {
       const layer = L.geoJSON(geojson);
       const bounds = layer.getBounds();
-      if (bounds.isValid()) map.fitBounds(bounds, { padding: [50, 50], maxZoom: 18 });
+      if (bounds.isValid()) {
+          map.fitBounds(bounds, { padding: [50, 50], maxZoom: 18 });
+          hasFitted.current = true;
+      }
     });
   }, [geojson, map]);
   return null;
@@ -201,12 +211,21 @@ export default function ReconciliationMap({ onMatchComplete, selectedMatchId, re
       {/* ── Search bar ── */}
       <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-primary)', position: 'relative', zIndex: 1100 }}>
         <div style={{ position: 'relative', maxWidth: 480 }}>
-          <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 24, padding: '0 4px 0 14px', transition: 'box-shadow .2s' }}>
+          <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 24, padding: '0 4px 0 14px', transition: 'box-shadow .2s', boxShadow: showDropdown ? '0 0 0 2px var(--accent-primary)' : 'none' }}>
             <Search size={15} style={{ opacity: .45, flexShrink: 0 }} />
             <input
               value={query}
-              onChange={e => handleQueryChange(e.target.value)}
-              onFocus={() => results.length && setShowDropdown(true)}
+              onChange={e => {
+                const val = e.target.value;
+                setQuery(val);
+                if (val.trim().length === 0) {
+                  setResults([]);
+                  setShowDropdown(false);
+                } else {
+                  handleQueryChange(val);
+                }
+              }}
+              onFocus={() => { if (results.length > 0) setShowDropdown(true); }}
               placeholder="Search any place in India…"
               style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', padding: '8px 10px', color: 'var(--text-primary)', fontSize: 14 }}
             />
@@ -216,20 +235,30 @@ export default function ReconciliationMap({ onMatchComplete, selectedMatchId, re
             )}
           </div>
 
-          {showDropdown && (
-            <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 6, background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 12, overflow: 'hidden', boxShadow: '0 8px 30px rgba(0,0,0,.18)', maxHeight: 240, overflowY: 'auto' }}>
-              {results.map((r, i) => (
-                <div key={i} onClick={() => selectResult(r)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', fontSize: 13, color: 'var(--text-primary)', transition: 'background .15s' }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-primary)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                >
-                  <MapPin size={14} style={{ opacity: .4, flexShrink: 0 }} />
-                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.display_name}</span>
-                </div>
-              ))}
-            </div>
-          )}
+          {/* Click-outside overlay */}
+          {showDropdown && <div style={{ position: 'fixed', inset: 0, zIndex: 10 }} onClick={() => setShowDropdown(false)} />}
+
+          <div style={{ 
+            position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 6, 
+            background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 12, overflow: 'hidden', 
+            boxShadow: '0 8px 30px rgba(0,0,0,.18)', maxHeight: 240, overflowY: 'auto',
+            opacity: showDropdown ? 1 : 0,
+            transform: showDropdown ? 'translateY(0)' : 'translateY(-10px)',
+            pointerEvents: showDropdown ? 'auto' : 'none',
+            transition: 'opacity 0.2s ease, transform 0.2s ease',
+            zIndex: 20
+          }}>
+            {results.map((r, i) => (
+              <div key={i} onClick={() => selectResult(r)}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', fontSize: 13, color: 'var(--text-primary)', transition: 'background .15s' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-primary)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <MapPin size={14} style={{ opacity: .4, flexShrink: 0 }} />
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.display_name}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

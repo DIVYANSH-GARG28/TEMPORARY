@@ -25,6 +25,13 @@ export default function AnalyticsDashboard() {
   const potentialRevenue = data.potential_revenue_recovered;
   const pendingConflicts = data.pending_conflicts;
 
+  const autoVal = data.stats?.auto_harmonized || 0;
+  const topoVal = data.stats?.manual_review || 0;
+  const entityVal = data.stats?.entity_type_conflict || 0;
+  const totalStats = autoVal + topoVal + entityVal;
+  
+  const getWidth = (val) => totalStats > 0 ? `${(val / totalStats) * 100}%` : '0%';
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '1rem', height: 'calc(100vh - 120px)', overflowY: 'auto' }} className="custom-scrollbar">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -82,30 +89,30 @@ export default function AnalyticsDashboard() {
           <div style={{ marginBottom: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
               <span>Auto-Harmonized (High Confidence)</span>
-              <span style={{ color: 'var(--status-green)' }}>{data.stats?.auto_harmonized || 0}</span>
+              <span style={{ color: 'var(--status-green)' }}>{autoVal}</span>
             </div>
             <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: '75%', background: 'var(--status-green)' }}></div>
+              <div style={{ height: '100%', width: getWidth(autoVal), background: 'var(--status-green)', transition: 'width 0.5s ease' }}></div>
             </div>
           </div>
 
           <div style={{ marginBottom: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
               <span>Topology Mismatches (IoU &lt; 80%)</span>
-              <span style={{ color: 'var(--status-yellow)' }}>{data.stats?.manual_review || 0}</span>
+              <span style={{ color: 'var(--status-yellow)' }}>{topoVal}</span>
             </div>
             <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: '15%', background: 'var(--status-yellow)' }}></div>
+              <div style={{ height: '100%', width: getWidth(topoVal), background: 'var(--status-yellow)', transition: 'width 0.5s ease' }}></div>
             </div>
           </div>
 
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
               <span>Entity Type Conflicts (LLM Flagged)</span>
-              <span style={{ color: 'var(--status-red)' }}>{data.stats?.entity_type_conflict || 0}</span>
+              <span style={{ color: 'var(--status-red)' }}>{entityVal}</span>
             </div>
             <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: '10%', background: 'var(--status-red)' }}></div>
+              <div style={{ height: '100%', width: getWidth(entityVal), background: 'var(--status-red)', transition: 'width 0.5s ease' }}></div>
             </div>
           </div>
         </div>
@@ -127,7 +134,9 @@ export default function AnalyticsDashboard() {
             </li>
             <li style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem' }}>
               <span>GNSS Ground Truthing (CORS)</span>
-              <span style={{ fontSize: '0.8rem', color: 'var(--status-yellow)' }}>Syncing...</span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--status-green)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Check size={16} /> Live Stream
+              </span>
             </li>
           </ul>
         </div>

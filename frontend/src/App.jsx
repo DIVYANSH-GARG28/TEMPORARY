@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Menu, X, Bell } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import AnalyticsDashboard from './pages/AnalyticsDashboard';
@@ -13,12 +13,34 @@ import Provenance from './pages/Provenance';
 import Settings from './pages/Settings';
 import './index.css';
 
+// Global Toast Event Dispatcher Helper
+export const triggerToast = (msg, type = 'info') => {
+  window.dispatchEvent(new CustomEvent('show-toast', { detail: { msg, type } }));
+};
+
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [userRole, setUserRole] = useState('chief_approver'); // 'chief_approver' or 'field_surveyor'
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedMatchId, setSelectedMatchId] = useState(null);
+  
+  // Global Toast State
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    // Initialize Theme from Settings
+    const isDark = localStorage.getItem('naksha_dark_mode') !== 'false';
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+
+    // Global Toast Listener
+    const handleToast = (e) => {
+      setToast(e.detail);
+      setTimeout(() => setToast(null), 4000);
+    };
+    window.addEventListener('show-toast', handleToast);
+    return () => window.removeEventListener('show-toast', handleToast);
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -108,6 +130,31 @@ function App() {
           {renderContent()}
         </div>
       </main>
+
+      {/* Global Apple-Grade Toast Notification */}
+      {toast && (
+        <div style={{
+          position: 'fixed', top: 30, right: 30, zIndex: 99999,
+          padding: '14px 20px', borderRadius: 12,
+          background: 'var(--bg-glass)', backdropFilter: 'blur(20px)',
+          border: `1px solid ${toast.type === 'success' ? 'var(--status-green)' : toast.type === 'error' ? 'var(--status-red)' : 'var(--accent-primary)'}`,
+          color: 'var(--text-primary)', fontSize: 14, fontWeight: 600, 
+          boxShadow: '0 10px 40px -10px rgba(0,0,0,0.5)',
+          animation: 'toastSlideIn .4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+          display: 'flex', alignItems: 'center', gap: '10px',
+          minWidth: '250px'
+        }}>
+          <Bell size={18} style={{ color: toast.type === 'success' ? 'var(--status-green)' : toast.type === 'error' ? 'var(--status-red)' : 'var(--accent-primary)' }} />
+          {toast.msg}
+        </div>
+      )}
+
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes toastSlideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+      `}} />
     </div>
   );
 }

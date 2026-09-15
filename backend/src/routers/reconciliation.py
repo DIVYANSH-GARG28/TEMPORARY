@@ -30,7 +30,7 @@ def trigger_reconciliation(db: Session = Depends(get_db)):
         JOIN 
             source_records m 
         ON 
-            ST_DWithin(c.original_geometry, m.original_geometry, 0.0001) -- Candidates within proximity
+            ST_DWithin(c.original_geometry, m.original_geometry, 15.0) -- Candidates within proximity (15 meters)
         WHERE 
             c.source_type = 'cadastral' AND m.source_type = 'municipal'
             AND c.canonical_entity_id IS NULL AND m.canonical_entity_id IS NULL
@@ -143,6 +143,7 @@ def get_results(db: Session = Depends(get_db)):
 def get_geojson(db: Session = Depends(get_db)):
     import json
     # Join LandEntities to their SourceRecords to send to frontend
+    # 1. Mapped Canonical Entities
     query = text("""
         SELECT 
             e.id, e.status, e.match_type, e.overall_confidence,
@@ -165,6 +166,19 @@ def get_geojson(db: Session = Depends(get_db)):
             p = props.copy()
             p["source"] = "municipal"
             features.append({"type": "Feature", "properties": p, "geometry": json.loads(row[5])})
+
+    # 2. Unmapped Source Records
+    unmapped_query = text("""
+        SELECT 
+            id, source_type, ST_AsGeoJSON(ST_Transform(original_geometry, 4326)) as geom
+        FROM source_records
+        WHERE canonical_entity_id IS NULL
+    """)
+    unmapped_results = db.execute(unmapped_query).fetchall()
+    for row in unmapped_results:
+        if row[2]:
+            props = {"id": f"unmapped-{row[0]}", "status": "PENDING_REVIEW", "source": row[1], "confidence": 0}
+            features.append({"type": "Feature", "properties": props, "geometry": json.loads(row[2])})
             
     return {"type": "FeatureCollection", "features": features}
 

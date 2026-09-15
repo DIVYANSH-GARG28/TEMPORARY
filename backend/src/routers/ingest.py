@@ -71,51 +71,7 @@ def fetch_overpass_data(bounds, date_str=None):
             print(f"Overpass API {url} failed: {e}")
             continue
             
-    # FAILSAFE FALLBACK: Generate synthetic Overpass JSON data so the MVP NEVER fails during pitch
-    import random
-    lat1, lon1, lat2, lon2 = map(float, bounds.split(','))
-    lat_center = (lat1 + lat2) / 2
-    lon_center = (lon1 + lon2) / 2
-    
-    nodes = []
-    ways = []
-    
-    print(f"WARNING: All Overpass servers offline. Deploying Failsafe synthetic spatial data for bounding box {bounds}...")
-    
-    # Generate 15 synthetic buildings in the bounds
-    for i in range(15):
-        offset_lat = (random.random() - 0.5) * (abs(lat2 - lat1) * 0.8)
-        offset_lon = (random.random() - 0.5) * (abs(lon2 - lon1) * 0.8)
-        clat = lat_center + offset_lat
-        clon = lon_center + offset_lon
-        
-        # 4 corners of a building (~15x15 meters)
-        size = 0.00015
-        nid_base = (i + 1) * 10
-        
-        # Simulate slight historical geometry drift
-        drift = 0.00003 if date_str else 0.0 
-        
-        n1 = {'type': 'node', 'id': nid_base+1, 'lat': clat-size+drift, 'lon': clon-size+drift}
-        n2 = {'type': 'node', 'id': nid_base+2, 'lat': clat-size+drift, 'lon': clon+size+drift}
-        n3 = {'type': 'node', 'id': nid_base+3, 'lat': clat+size+drift, 'lon': clon+size+drift}
-        n4 = {'type': 'node', 'id': nid_base+4, 'lat': clat+size+drift, 'lon': clon-size+drift}
-        
-        nodes.extend([n1, n2, n3, n4])
-        
-        # Randomly omit 20% of buildings in historical data to simulate "unregistered new buildings"
-        if date_str and random.random() > 0.8:
-            continue
-            
-        way = {
-            'type': 'way',
-            'id': (i + 1) * 100,
-            'nodes': [nid_base+1, nid_base+2, nid_base+3, nid_base+4],
-            'tags': {'building': 'yes'}
-        }
-        ways.append(way)
-        
-    return {'elements': nodes + ways}
+    return None
 
 def process_osm_features(osm_data):
     if not osm_data:

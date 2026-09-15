@@ -14,7 +14,8 @@ ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# PyTorch removed completely to save data
+RUN pip install --no-cache-dir --default-timeout=1000 -r requirements.txt
 
 COPY src/ /app/src/
 COPY init_db.py /app/init_db.py
