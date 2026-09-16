@@ -323,6 +323,15 @@ body {
   color: #6ee7b7;
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.lucide-spin {
+  animation: spin 1s linear infinite;
+}
+
 /* Responsive Mobile Layout */
 .mobile-menu-btn {
   display: none;
@@ -390,4 +399,21 @@ body {
 *::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+
+@media print {
+  body { background: white !important; color: black !important; }
+  .sidebar, .hide-on-print { display: none !important; }
+  .main-content { margin: 0 !important; padding: 0 !important; width: 100% !important; overflow: visible !important; }
+  .app-container { height: auto !important; display: block !important; overflow: visible !important; }
+  .panel-card { border: 1px solid #ccc !important; box-shadow: none !important; background: white !important; break-inside: avoid; }
+  * { color: black !important; text-shadow: none !important; }
+}
+
+/* Hide Google Translate UI */
+.goog-te-banner-frame.skiptranslate { display: none !important; }
+body { top: 0px !important; }
+.goog-tooltip { display: none !important; }
+.goog-tooltip:hover { display: none !important; }
+.goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
 

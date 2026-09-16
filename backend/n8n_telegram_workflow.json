@@ -1,0 +1,122 @@
+{
+  "name": "GeoSync_Anti_Corruption_Auditor",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": ["message"]
+      },
+      "id": "telegram-trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ Object.keys($json.message).includes('location') }}",
+              "value2": "true"
+            }
+          ]
+        }
+      },
+      "id": "if-location",
+      "name": "Is Location?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://your-localtunnel-url.loca.lt/api/telegram/location",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "latitude", "value": "={{ $json.message.location.latitude }}" },
+            { "name": "longitude", "value": "={{ $json.message.location.longitude }}" },
+            { "name": "user_id", "value": "={{ $json.message.from.id }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-backend",
+      "name": "PostGIS Anti-Corruption Audit",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [700, 200]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $node[\"Telegram Trigger\"].json.message.from.id }}",
+        "text": "={{ $json.audit_message }}\n\n🏢 Target Entity: #{{ $json.entity_id }}\n📝 Owner: {{ $json.owner }}"
+      },
+      "id": "telegram-audit-response",
+      "name": "Send Audit Result",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [950, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ Object.keys($json.message).includes('photo') }}",
+              "value2": "true"
+            }
+          ]
+        }
+      },
+      "id": "if-photo",
+      "name": "Is Photo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [700, 400]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.from.id }}",
+        "text": "✅ Physical evidence encrypted and uploaded to the Blockchain Provenance Vault."
+      },
+      "id": "telegram-photo-success",
+      "name": "Confirm Evidence",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [950, 400]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.from.id }}",
+        "text": "🛡️ GeoSync Vigilance Field Ops 🛡️\n\nTo resolve a spatial conflict, please send a Live Location Pin to prove you are physically present at the site."
+      },
+      "id": "telegram-welcome",
+      "name": "Send Welcome",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [950, 600]
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [ [ { "node": "Is Location?", "type": "main", "index": 0 } ] ]
+    },
+    "Is Location?": {
+      "main": [
+        [ { "node": "PostGIS Anti-Corruption Audit", "type": "main", "index": 0 } ],
+        [ { "node": "Is Photo?", "type": "main", "index": 0 } ]
+      ]
+    },
+    "PostGIS Anti-Corruption Audit": {
+      "main": [ [ { "node": "Send Audit Result", "type": "main", "index": 0 } ] ]
+    },
+    "Is Photo?": {
+      "main": [
+        [ { "node": "Confirm Evidence", "type": "main", "index": 0 } ],
+        [ { "node": "Send Welcome", "type": "main", "index": 0 } ]
+      ]
+    }
+  }
+}

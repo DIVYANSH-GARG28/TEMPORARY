@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import func, text
 from src.database import get_db
 from src.models import models
 from pydantic import BaseModel
 import datetime
+import httpx
 
 router = APIRouter()
 
@@ -13,8 +14,22 @@ class ReviewAction(BaseModel):
     reviewer: str = "SIH_Judge"
     reason: str = "Manual review override"
 
+def send_telegram_alert(entity_id: int, action: str, reviewer: str, reason: str):
+    webhook_url = "https://divyansh67.app.n8n.cloud/webhook-test/sih-alert"
+    payload = {
+        "entity_id": entity_id,
+        "action": action,
+        "reviewer": reviewer,
+        "message": f"GeoSync topology engine registered a ledger update.\n*Reason:* {reason}"
+    }
+    try:
+        with httpx.Client() as client:
+            client.post(webhook_url, json=payload, timeout=5.0)
+    except Exception as e:
+        print(f"n8n webhook failed: {e}")
+
 @router.post("/entity/{entity_id}/review")
-def review_entity(entity_id: int, action: ReviewAction, db: Session = Depends(get_db)):
+def review_entity(entity_id: int, action: ReviewAction, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     entity = db.query(models.LandEntity).filter(models.LandEntity.id == entity_id).first()
     if not entity:
         raise HTTPException(status_code=404, detail="Entity not found")
@@ -35,6 +50,9 @@ def review_entity(entity_id: int, action: ReviewAction, db: Session = Depends(ge
     )
     db.add(audit)
     db.commit()
+    
+    # Fire Telegram webhook silently in the background
+    background_tasks.add_task(send_telegram_alert, entity_id, action.action, action.reviewer, action.reason)
     
     return {"message": f"Successfully recorded {action.action} to provenance ledger."}
 

@@ -79,28 +79,61 @@ export default function DroneFeed() {
     // Batch Scan & Pipeline State
     const [pipelineStatus, setPipelineStatus] = useState('idle'); // idle, running, complete
     const [activeStep, setActiveStep] = useState(0);
-    const [showPushModal, setShowPushModal] = useState(false);
     const [extractedPolygons, setExtractedPolygons] = useState([]);
     const [extractedStats, setExtractedStats] = useState([]);
+    const [flightLogs, setFlightLogs] = useState([
+        { time: new Date().toLocaleTimeString(), msg: 'Awaiting data link connection...' }
+    ]);
     
-    // Telemetry updates
+    // Telemetry and Flight Logging updates
     useEffect(() => {
         let interval;
         if (connectionStatus === 'connected') {
             interval = setInterval(() => {
-                setTelemetry(prev => ({
-                    ...prev,
-                    lat: prev.lat + (Math.random() - 0.5) * 0.0001,
-                    lng: prev.lng + (Math.random() - 0.5) * 0.0001,
-                    alt: Math.max(10, prev.alt + (Math.random() - 0.5) * 2),
-                    speed: Math.max(0, prev.speed + (Math.random() - 0.5) * 5),
-                    battery: Math.max(0, prev.battery - 0.05),
-                    frame: prev.frame + 15
-                }));
+                setTelemetry(prev => {
+                    const newLat = prev.lat + (Math.random() - 0.5) * 0.0001;
+                    const newLng = prev.lng + (Math.random() - 0.5) * 0.0001;
+                    
+                    // Add a log entry every few seconds
+                    if (Math.random() > 0.6) {
+                        setFlightLogs(logs => {
+                            const newLogs = [...logs, { 
+                                time: new Date().toLocaleTimeString(), 
+                                msg: `NAV: Position updated to ${newLat.toFixed(5)}, ${newLng.toFixed(5)} | Alt: ${prev.alt.toFixed(1)}m`
+                            }];
+                            return newLogs.slice(-12); // Keep last 12 logs
+                        });
+                    }
+                    
+                    return {
+                        ...prev,
+                        lat: newLat,
+                        lng: newLng,
+                        alt: Math.max(10, prev.alt + (Math.random() - 0.5) * 2),
+                        speed: Math.max(0, prev.speed + (Math.random() - 0.5) * 5),
+                        battery: Math.max(0, prev.battery - 0.05),
+                        frame: prev.frame + 15
+                    };
+                });
             }, 1000);
+            
+            // Initial connection log
+            setFlightLogs(logs => [...logs, { time: new Date().toLocaleTimeString(), msg: 'SYS: Secure IP Camera link established. Streaming live.' }]);
         }
         return () => clearInterval(interval);
     }, [connectionStatus]);
+
+    // AR Live Extraction Loop (Hits API dynamically based on drone location)
+    useEffect(() => {
+        let arInterval;
+        if (connectionStatus === 'connected' && mode === 'live') {
+            arInterval = setInterval(() => {
+                // Fetch dynamic grid around current drone location
+                fetchRealBuildingsAsMockML(telemetry.lat, telemetry.lng, true);
+            }, 6000); // Poll every 6 seconds to avoid rate limits
+        }
+        return () => clearInterval(arInterval);
+    }, [connectionStatus, mode, telemetry.lat, telemetry.lng]);
 
     const handleConnect = () => {
         setConnectionStatus('connecting');
@@ -116,9 +149,22 @@ export default function DroneFeed() {
         setExtractedStats([]);
     };
 
-    const fetchRealBuildingsAsMockML = async () => {
-        // Expanded bounding box to capture the Secretariat Buildings and Parliament area
-        const query = `[out:json];(way["building"](28.608,77.195,28.618,77.210););(._;>;);out body;`;
+    const startPipeline = () => {
+        setPipelineStatus('running');
+        setExtractedPolygons([]);
+        setExtractedStats([]);
+        setActiveStep(0);
+        fetchRealBuildingsAsMockML(28.613, 77.202, false);
+    };
+
+    const fetchRealBuildingsAsMockML = async (centerLat = 28.613, centerLng = 77.202, isSilentAR = false) => {
+        // Calculate a bounding box around the provided center
+        const s = (centerLat - 0.004).toFixed(4);
+        const w = (centerLng - 0.005).toFixed(4);
+        const n = (centerLat + 0.004).toFixed(4);
+        const e = (centerLng + 0.005).toFixed(4);
+        
+        const query = `[out:json];(way["building"](${s},${w},${n},${e}););(._;>;);out body;`;
         const endpoints = [
             'https://overpass-api.de/api/interpreter',
             'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
@@ -126,7 +172,7 @@ export default function DroneFeed() {
         ];
 
         try {
-            setActiveStep(1); // Preprocessing
+            if (!isSilentAR) setActiveStep(1); // Preprocessing
             
             let data = null;
             let successEndpoint = null;
@@ -152,17 +198,18 @@ export default function DroneFeed() {
             }
 
             if (!data || !data.elements) {
-                throw new Error("All global spatial servers are blocked by your Wi-Fi.");
+                if (!isSilentAR) throw new Error("All global spatial servers are blocked by your Wi-Fi.");
+                return;
             }
             
-            setActiveStep(2); // Inference
+            if (!isSilentAR) setActiveStep(2); // Inference
             const nodes = {};
             data.elements.forEach(e => { if (e.type === 'node') nodes[e.id] = [e.lat, e.lon]; });
             
             const ways = data.elements.filter(e => e.type === 'way' && e.nodes);
             const polys = ways.map(way => way.nodes.map(nid => nodes[nid]).filter(Boolean));
             
-            setActiveStep(3); // Vectorization
+            if (!isSilentAR) setActiveStep(3); // Vectorization
             setExtractedPolygons(polys.slice(0, 45)); 
             
             const stats = ways.slice(0, 45).map((way, i) => {
@@ -180,26 +227,34 @@ export default function DroneFeed() {
                 };
             });
             setExtractedStats(stats);
-            if (!polys || polys.length === 0) {
-                triggerToast("Scan complete: No unregistered buildings detected in this grid.", "info");
-            } else {
-                triggerToast("Live spatial data fetched successfully!", "success");
-            }
             
-            setActiveStep(4);
-            setPipelineStatus('complete');
+            if (!isSilentAR) {
+                if (!polys || polys.length === 0) {
+                    triggerToast("Scan complete: No unregistered buildings detected in this grid.", "info");
+                } else {
+                    triggerToast("Live spatial data fetched successfully!", "success");
+                }
+                setActiveStep(4);
+                setPipelineStatus('complete');
+            } else {
+                // If it is AR, we just log to the terminal quietly
+                if (polys.length > 0) {
+                    setFlightLogs(logs => {
+                        const newLogs = [...logs, { 
+                            time: new Date().toLocaleTimeString(), 
+                            msg: `ML: Auto-extracted ${polys.length} features at [${centerLat.toFixed(4)}, ${centerLng.toFixed(4)}]`
+                        }];
+                        return newLogs.slice(-12);
+                    });
+                }
+            }
         } catch(e) {
-            triggerToast(e.message || "Extraction failed: Network block.", "error");
-            setPipelineStatus('idle');
+            if (!isSilentAR) {
+                triggerToast(e.message || "Extraction failed: Network block.", "error");
+                setPipelineStatus('idle');
+            }
         }
     }
-
-    const startPipeline = () => {
-        setPipelineStatus('running');
-        setActiveStep(0);
-        setExtractedPolygons([]);
-        fetchRealBuildingsAsMockML();
-    };
 
     return (
         <div style={{
@@ -459,6 +514,21 @@ export default function DroneFeed() {
                                                 <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
                                                 <MapTracker lat={telemetry.lat} lng={telemetry.lng} />
                                                 <CircleMarker center={[telemetry.lat, telemetry.lng]} radius={3} pathOptions={{ color: '#ef4444', fillColor: '#ef4444', fillOpacity: 1 }} />
+                                                
+                                                {/* Live AR Overlay of Extracted Polygons */}
+                                                {extractedPolygons.map((poly, i) => (
+                                                    <Polygon 
+                                                        key={i}
+                                                        positions={poly}
+                                                        pathOptions={{ 
+                                                            color: '#10b981', 
+                                                            fillColor: '#10b981', 
+                                                            fillOpacity: 0.3, 
+                                                            weight: 2,
+                                                            dashArray: '4,4'
+                                                        }}
+                                                    />
+                                                ))}
                                             </MapContainer>
                                         )}
                                         
@@ -612,54 +682,83 @@ export default function DroneFeed() {
                     )}
                 </div>
 
-                {/* Sidebar Pipeline */}
+                {/* Sidebar */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <div className="panel-card" style={{ 
-                        background: 'var(--bg-glass, rgba(30, 41, 59, 0.7))',
-                        backdropFilter: 'blur(16px)',
-                        border: '1px solid var(--border-color, #334155)',
-                        borderRadius: '12px',
-                        padding: '1.5rem'
-                    }}>
-                        <h3 style={{ margin: '0 0 1.5rem 0', color: 'var(--text-primary, #f8fafc)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <Cpu size={20} /> Pipeline Status
-                        </h3>
-                        
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <PipelineStep 
-                                icon={ImageIcon} 
-                                title="Image Preprocessing" 
-                                desc="Tiling and normalization" 
-                                isActive={pipelineStatus === 'running' && activeStep === 0}
-                                isComplete={activeStep > 0}
-                            />
-                            <PipelineStep 
-                                icon={ScanSearch} 
-                                title="Model Inference" 
-                                desc="YOLOv8 footprint detection" 
-                                isActive={pipelineStatus === 'running' && activeStep === 1}
-                                isComplete={activeStep > 1}
-                            />
-                            <PipelineStep 
-                                icon={MapPin} 
-                                title="Vectorization" 
-                                desc="Polygon extraction & geo-registration" 
-                                isActive={pipelineStatus === 'running' && activeStep === 2}
-                                isComplete={activeStep > 2}
-                            />
-                        </div>
-                        
-                        {pipelineStatus === 'complete' && (
-                            <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--status-green, #10b981)', borderRadius: '8px' }}>
-                                <p style={{ margin: 0, color: 'var(--status-green, #10b981)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 500 }}>
-                                    <CheckCircle2 size={18} /> Processing Complete
-                                </p>
-                                <p style={{ margin: '0.5rem 0 0 0', color: 'var(--text-secondary, #94a3b8)', fontSize: '0.85rem' }}>
-                                    Successfully extracted 24 polygons.
-                                </p>
+                    
+                    {mode === 'live' ? (
+                        <div className="panel-card" style={{ 
+                            background: 'var(--bg-glass, rgba(30, 41, 59, 0.7))',
+                            backdropFilter: 'blur(16px)',
+                            border: '1px solid var(--border-color, #334155)',
+                            borderRadius: '12px',
+                            padding: '1.5rem',
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}>
+                            <h3 style={{ margin: '0 0 1rem 0', color: 'var(--text-primary, #f8fafc)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <Radio size={20} color="var(--accent-primary)" /> Live Telemetry Log
+                            </h3>
+                            
+                            <div style={{ 
+                                background: 'rgba(0,0,0,0.5)', 
+                                flex: 1, 
+                                borderRadius: '8px', 
+                                padding: '1rem', 
+                                fontFamily: 'monospace',
+                                fontSize: '0.85rem',
+                                color: '#10b981',
+                                overflowY: 'auto',
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.5rem'
+                            }}>
+                                {flightLogs.map((log, i) => (
+                                    <div key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.25rem' }}>
+                                        <span style={{ color: '#64748b', marginRight: '0.5rem' }}>[{log.time}]</span>
+                                        <span style={{ color: log.msg.startsWith('SYS') ? '#3b82f6' : '#10b981' }}>{log.msg}</span>
+                                    </div>
+                                ))}
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        <div className="panel-card" style={{ 
+                            background: 'var(--bg-glass, rgba(30, 41, 59, 0.7))',
+                            backdropFilter: 'blur(16px)',
+                            border: '1px solid var(--border-color, #334155)',
+                            borderRadius: '12px',
+                            padding: '1.5rem'
+                        }}>
+                            <h3 style={{ margin: '0 0 1.5rem 0', color: 'var(--text-primary, #f8fafc)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <Cpu size={20} /> Pipeline Status
+                            </h3>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <PipelineStep 
+                                    icon={ImageIcon} 
+                                    title="Image Preprocessing" 
+                                    desc="Tiling and normalization" 
+                                    isActive={pipelineStatus === 'running' && activeStep === 1}
+                                    isComplete={activeStep > 1}
+                                />
+                                <PipelineStep 
+                                    icon={ScanSearch} 
+                                    title="Model Inference" 
+                                    desc="YOLOv8 footprint detection" 
+                                    isActive={pipelineStatus === 'running' && activeStep === 2}
+                                    isComplete={activeStep > 2}
+                                />
+                                <PipelineStep 
+                                    icon={MapPin} 
+                                    title="Vectorization" 
+                                    desc="Polygon extraction & geo-registration" 
+                                    isActive={pipelineStatus === 'running' && activeStep === 3}
+                                    isComplete={activeStep > 3}
+                                />
+                            </div>
+                        </div>
+                    )}
                     
                     {pipelineStatus === 'complete' && (
                         <div className="panel-card" style={{ 
@@ -692,7 +791,9 @@ export default function DroneFeed() {
                             </div>
                             
                             <button 
-                                onClick={() => setShowPushModal(true)}
+                                onClick={() => {
+                                    triggerToast('Successfully synchronized ' + extractedStats.length + ' features to the secure ledger!', 'success');
+                                }}
                                 style={{
                                     width: '100%',
                                     background: 'var(--accent-primary, #3b82f6)',
@@ -708,58 +809,12 @@ export default function DroneFeed() {
                                     fontWeight: 500
                                 }}
                             >
-                                <Database size={18} /> Push to Database
+                                <Database size={18} /> Sync to Immutable Ledger
                             </button>
                         </div>
                     )}
                 </div>
             </div>
-            
-            {/* Push Modal */}
-            {showPushModal && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                    background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    zIndex: 50
-                }}>
-                    <div style={{
-                        background: 'var(--bg-primary, #0f172a)',
-                        border: '1px solid var(--border-color, #334155)',
-                        borderRadius: '12px',
-                        padding: '2rem',
-                        width: '100%',
-                        maxWidth: '400px'
-                    }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                            <h3 style={{ margin: 0, color: 'var(--text-primary, #f8fafc)' }}>Sync to Naksha Database</h3>
-                            <button onClick={() => setShowPushModal(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary, #94a3b8)', cursor: 'pointer' }}>
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <p style={{ color: 'var(--text-secondary, #94a3b8)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
-                            Are you sure you want to push {extractedStats.length} extracted features to the main spatial database? This will make them available in the Map Viewer.
-                        </p>
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            <button 
-                                onClick={() => setShowPushModal(false)}
-                                style={{ flex: 1, background: 'var(--bg-secondary, #1e293b)', color: 'var(--text-primary, #f8fafc)', border: '1px solid var(--border-color, #334155)', padding: '0.75rem', borderRadius: '6px', cursor: 'pointer' }}
-                            >
-                                Cancel
-                            </button>
-                            <button 
-                                onClick={() => {
-                                    triggerToast('Successfully pushed to database!', 'success');
-                                    setShowPushModal(false);
-                                }}
-                                style={{ flex: 1, background: 'var(--accent-primary, #3b82f6)', color: '#fff', border: 'none', padding: '0.75rem', borderRadius: '6px', cursor: 'pointer' }}
-                            >
-                                Confirm Push
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

@@ -2,7 +2,7 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from src.routers import datasets, reconciliation, review, audit, ingest
+from src.routers import datasets, reconciliation, review, audit, ingest, telegram, citizen
 
 app = FastAPI(title="GeoSync API", version="1.0.0")
 
@@ -36,6 +36,8 @@ app.include_router(reconciliation.router, prefix="/api/reconciliation", tags=["R
 app.include_router(review.router, prefix="/api/review", tags=["Human Review"])
 app.include_router(audit.router, prefix="/api/audit", tags=["Provenance"])
 app.include_router(ingest.router, prefix="/api/ingest", tags=["Ingest"])
+app.include_router(telegram.router, prefix="/api/telegram", tags=["Telegram Integration"])
+app.include_router(citizen.router, prefix="/api/citizen", tags=["Citizen Portal"])
 
 @app.get("/")
 def read_root():

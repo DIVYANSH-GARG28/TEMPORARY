@@ -83,11 +83,14 @@ function styleFeature(feature, selectedId) {
 
 // ─── Main component ────────────────────────────────────────────
 
-export default function ReconciliationMap({ onMatchComplete, selectedMatchId, refreshKey }) {
+import { translations } from '../translations';
+
+export default function ReconciliationMap({ onMatchComplete, selectedMatchId, refreshKey, lang = 'en' }) {
   const [geojson, setGeojson] = useState(null);
   const [bounds, setBounds] = useState(null);
   const [isMatching, setIsMatching] = useState(false);
   const [isIngesting, setIsIngesting] = useState(false);
+  const t = translations[lang]?.workspace || translations['en'].workspace;
 
   // Search state
   const [query, setQuery] = useState('');
@@ -226,7 +229,7 @@ export default function ReconciliationMap({ onMatchComplete, selectedMatchId, re
                 }
               }}
               onFocus={() => { if (results.length > 0) setShowDropdown(true); }}
-              placeholder="Search any place in India…"
+              placeholder={t.search}
               style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', padding: '8px 10px', color: 'var(--text-primary)', fontSize: 14 }}
             />
             {searching && <Loader2 size={14} style={{ animation: 'spin 1s linear infinite', marginRight: 8, opacity: .5 }} />}
@@ -265,23 +268,23 @@ export default function ReconciliationMap({ onMatchComplete, selectedMatchId, re
       {/* ── Toolbar ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', flexWrap: 'wrap', gap: 10, borderBottom: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)', fontWeight: 700 }}>Geospatial View</h2>
-          {featureCount > 0 && <span style={{ fontSize: 12, opacity: .5 }}>{featureCount} features</span>}
+          <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)', fontWeight: 700 }}>{t.geoView}</h2>
+          {featureCount > 0 && <span style={{ fontSize: 12, opacity: .5 }}>{featureCount} {t.features}</span>}
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
           {/* Legend */}
           <div style={{ display: 'flex', gap: 6, marginRight: 6 }}>
-            {[['#34d399','Auto'], ['#fbbf24','Review'], ['#f87171','Conflict']].map(([c,l]) => (
+            {[['#34d399', t.auto], ['#fbbf24', t.review], ['#f87171', t.conflict]].map(([c,l]) => (
               <span key={l} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, padding: '3px 8px', borderRadius: 20, background: c + '18', color: c, fontWeight: 600 }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: c }} />{l}
               </span>
             ))}
           </div>
 
-          <ToolbarButton icon={<Trash2 size={14}/>} label="Reset" onClick={resetDemo} variant="ghost" />
-          <ToolbarButton icon={<Navigation size={14}/>} label="Ingest Area" onClick={ingestArea} loading={isIngesting} variant="secondary" />
-          <ToolbarButton icon={<Zap size={14}/>} label="Run Engine" onClick={runEngine} loading={isMatching} variant="primary" />
+          <ToolbarButton icon={<Trash2 size={14}/>} label={t.reset} onClick={resetDemo} variant="ghost" />
+          <ToolbarButton icon={<Navigation size={14}/>} label={t.ingest} onClick={ingestArea} loading={isIngesting} variant="secondary" />
+          <ToolbarButton icon={<Zap size={14}/>} label={t.run} onClick={runEngine} loading={isMatching} variant="primary" />
         </div>
       </div>
 
@@ -331,6 +334,7 @@ export default function ReconciliationMap({ onMatchComplete, selectedMatchId, re
 
       <style>{`
         @keyframes slideUp { from { opacity:0; transform: translateX(-50%) translateY(16px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );

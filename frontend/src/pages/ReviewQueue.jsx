@@ -3,13 +3,15 @@ import { Check, X, AlertOctagon, Loader2, ChevronRight, Shield, Eye, Zap, MapPin
 import axios from 'axios';
 
 const API = 'http://localhost:8000/api';
+import { translations } from '../translations';
 
-export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onSelectMatch, onReviewSubmit }) {
+export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onSelectMatch, onReviewSubmit, lang = 'en' }) {
   const [entities, setEntities] = useState([]);
   const [conflicts, setConflicts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [actionLoading, setActionLoading] = useState(null); // entity id being actioned
+  const [actionLoading, setActionLoading] = useState(null);
+  const t = translations[lang]?.review || translations['en'].review;
 
   const fetchData = async () => {
     setLoading(true);
@@ -84,11 +86,11 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
       <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 style={{ fontSize: '1.15rem', margin: 0, color: 'var(--text-primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
           <Shield size={18} color="var(--accent-primary)" />
-          Review Queue
+          {t.queue}
         </h2>
         {!loading && (
           <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 20, background: entities.length > 0 ? 'rgba(251,191,36,.15)' : 'rgba(52,211,153,.15)', color: entities.length > 0 ? '#fbbf24' : '#34d399', fontWeight: 600 }}>
-            {entities.length} pending
+            {entities.length} {t.pending}
           </span>
         )}
       </div>
@@ -133,7 +135,7 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
               return (
                 <div 
                   key={entity.id} 
-                  className={`panel-card ${isSelected ? 'active' : ''}`}
+                  className={`panel-card white-apple-card ${isSelected ? 'active' : ''}`}
                   onClick={() => onSelectMatch(entity.id)}
                   style={{ 
                     display: 'flex', flexDirection: 'column', gap: '0.75rem',
@@ -141,14 +143,13 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
                     opacity: isActioning ? 0.6 : 1,
                     transition: 'all .3s cubic-bezier(.4,0,.2,1)',
                     animation: `slideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) ${idx * 0.06}s both`,
-                    borderLeft: isSelected ? '3px solid var(--accent-primary)' : '3px solid transparent',
                   }}
                 >
                   {/* Top row: ID + badge */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                     <h3 style={{ fontSize: '0.95rem', margin: 0, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
                       <MapPin size={14} style={{ opacity: .5 }} />
-                      Entity #{entity.id}
+                      {t.entity} #{entity.id}
                       {entity.match_type && (
                         <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(139,92,246,.15)', color: '#a78bfa', fontWeight: 600, marginLeft: 4 }}>
                           {entity.match_type.replace(/_/g, ' ')}
@@ -162,13 +163,13 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
 
                   {/* Evidence bars */}
                   <div style={{ display: 'flex', gap: 12, fontSize: 12 }}>
-                    <EvidenceBar label="Spatial" value={entity.spatial_evidence} color="#60a5fa" />
-                    <EvidenceBar label="Attribute" value={entity.attribute_evidence} color="#a78bfa" />
+                    <EvidenceBar label={t.spatial} value={entity.spatial_evidence} color="#3b82f6" />
+                    <EvidenceBar label={t.attribute} value={entity.attribute_evidence} color="#8b5cf6" />
                   </div>
 
                   {/* Confidence reason */}
                   {entity.confidence_reason && (
-                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', padding: '8px 10px', background: 'rgba(255,255,255,.03)', borderRadius: 6, borderLeft: '2px solid var(--border-color)', lineHeight: 1.5 }}>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', padding: '8px 10px', background: 'var(--card-sub-bg, rgba(255,255,255,.03))', borderRadius: 6, borderLeft: '2px solid var(--border-color)', lineHeight: 1.5 }}>
                       {entity.confidence_reason}
                     </div>
                   )}
@@ -201,14 +202,14 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
                   {entity.attributes && (entity.attributes.owner_name || entity.attributes.municipal_owner) && (
                     <div style={{ display: 'flex', gap: 8, fontSize: 12 }}>
                       {entity.attributes.owner_name && (
-                        <div style={{ flex: 1, padding: '6px 8px', borderRadius: 6, background: 'rgba(96,165,250,.08)', border: '1px solid rgba(96,165,250,.15)' }}>
-                          <span style={{ opacity: .5 }}>Cadastral: </span>
+                        <div style={{ flex: 1, padding: '6px 8px', borderRadius: 6, background: 'rgba(59,130,246,.08)', border: '1px solid rgba(59,130,246,.15)', color: 'var(--text-primary)' }}>
+                          <span style={{ opacity: .6 }}>Cadastral: </span>
                           <strong>{entity.attributes.owner_name}</strong>
                         </div>
                       )}
                       {entity.attributes.municipal_owner && (
-                        <div style={{ flex: 1, padding: '6px 8px', borderRadius: 6, background: 'rgba(167,139,250,.08)', border: '1px solid rgba(167,139,250,.15)' }}>
-                          <span style={{ opacity: .5 }}>Municipal: </span>
+                        <div style={{ flex: 1, padding: '6px 8px', borderRadius: 6, background: 'rgba(139,92,246,.08)', border: '1px solid rgba(139,92,246,.15)', color: 'var(--text-primary)' }}>
+                          <span style={{ opacity: .6 }}>Municipal: </span>
                           <strong>{entity.attributes.municipal_owner}</strong>
                         </div>
                       )}
@@ -216,20 +217,20 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
                   )}
 
                   {/* Action buttons */}
-                  <div style={{ display: 'flex', gap: 8, paddingTop: 4, borderTop: '1px solid rgba(255,255,255,.04)' }}>
+                  <div style={{ display: 'flex', gap: 8, paddingTop: 6, marginTop: 2, borderTop: '1px solid var(--border-color)' }}>
                     <ActionBtn 
-                      label="Accept" icon={<Check size={13} />}
+                      label={t.accept} icon={<Check size={13} />}
                       color="var(--status-green)" disabled={userRole === 'field_surveyor' || isActioning}
                       onClick={(e) => handleAction(e, entity.id, 'AUTO_ACCEPT')}
                     />
                     <ActionBtn 
-                      label="Reject" icon={<X size={13} />}
+                      label={t.reject} icon={<X size={13} />}
                       color="var(--status-red)" disabled={userRole === 'field_surveyor' || isActioning}
                       onClick={(e) => handleAction(e, entity.id, 'REJECTED')}
                     />
                     {entityConflicts.some(c => c.conflict_type === 'GEOMETRY_CONFLICT') && (
                       <ActionBtn 
-                        label="Auto-Fix" icon={<Zap size={13} />}
+                        label={t.autofix} icon={<Zap size={13} />}
                         color="var(--accent-primary)" disabled={userRole === 'field_surveyor' || isActioning}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -251,6 +252,22 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
       </div>
 
       <style dangerouslySetInnerHTML={{__html: `
+        .white-apple-card {
+          background: #ffffff !important;
+          border-radius: 18px !important;
+          box-shadow: 0 10px 25px -5px rgba(0,0,0,0.06), 0 4px 10px -6px rgba(0,0,0,0.04) !important;
+          border: 1px solid rgba(0,0,0,0.04) !important;
+          --text-primary: #0f172a;
+          --text-secondary: #64748b;
+          --border-color: rgba(0,0,0,0.06);
+          --card-sub-bg: #f8fafc;
+        }
+        .white-apple-card.active {
+          box-shadow: 0 0 0 2px #3b82f6, 0 12px 28px -5px rgba(59,130,246,0.15) !important;
+          transform: translateY(-3px);
+          background: #ffffff !important;
+        }
+        
         @keyframes slideIn {
           from { opacity: 0; transform: translateY(14px); }
           to { opacity: 1; transform: translateY(0); }

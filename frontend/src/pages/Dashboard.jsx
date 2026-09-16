@@ -34,12 +34,15 @@ const AnimatedCounter = ({ value, prefix = '', suffix = '' }) => {
   return <>{prefix}{count.toLocaleString('en-IN')}{suffix}</>;
 };
 
-export default function Dashboard() {
+import { translations } from '../translations';
+
+export default function Dashboard({ lang = 'en' }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({ total: 0, auto: 0, review: 0, rejected: 0 });
   const [datasets, setDatasets] = useState([]);
   const [financials, setFinancials] = useState({ ghost_buildings_identified: 0, potential_revenue_recovered: 0 });
+  const t = translations[lang]?.dashboard || translations['en'].dashboard;
 
   const fetchData = async () => {
     setLoading(true);
@@ -90,10 +93,10 @@ export default function Dashboard() {
   }
 
   const cards = [
-    { icon: <Layers size={22} />, label: 'Total Entities', value: stats.total, color: 'var(--accent-primary)', bg: 'rgba(59,130,246,.08)' },
-    { icon: <CheckCircle size={22} />, label: 'Auto-Harmonized', value: stats.auto, color: 'var(--status-green)', bg: 'rgba(52,211,153,.08)' },
-    { icon: <AlertTriangle size={22} />, label: 'Pending Review', value: stats.review, color: 'var(--status-yellow)', bg: 'rgba(251,191,36,.08)' },
-    { icon: <XCircle size={22} />, label: 'Conflicts', value: stats.rejected, color: 'var(--status-red)', bg: 'rgba(248,113,113,.08)' },
+    { icon: <Layers size={22} />, label: t.total, value: stats.total, color: 'var(--accent-primary)', bg: 'rgba(59,130,246,.08)' },
+    { icon: <CheckCircle size={22} />, label: t.auto, value: stats.auto, color: 'var(--status-green)', bg: 'rgba(52,211,153,.08)' },
+    { icon: <AlertTriangle size={22} />, label: t.pending, value: stats.review, color: 'var(--status-yellow)', bg: 'rgba(251,191,36,.08)' },
+    { icon: <XCircle size={22} />, label: t.conflicts, value: stats.rejected, color: 'var(--status-red)', bg: 'rgba(248,113,113,.08)' },
   ];
 
   return (
@@ -102,8 +105,8 @@ export default function Dashboard() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.5rem', margin: 0, color: 'var(--text-primary)', fontWeight: 700 }}>Overview Dashboard</h1>
-          <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--text-secondary)' }}>GeoSync Reconciliation Engine Status</p>
+          <h1 style={{ fontSize: '1.5rem', margin: 0, color: 'var(--text-primary)', fontWeight: 700 }}>{t.title}</h1>
+          <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--text-secondary)' }}>{t.subtitle}</p>
         </div>
       </div>
       
@@ -130,10 +133,10 @@ export default function Dashboard() {
         <div>
           <h2 style={{ color: 'var(--status-green)', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: 8, fontSize: '1.05rem' }}>
             <TrendingUp size={20} />
-            Property Tax Leakage Recovered
+            {t.taxTitle}
           </h2>
           <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.9rem' }}>
-            Identified <strong style={{ color: 'var(--text-primary)' }}><AnimatedCounter value={financials.ghost_buildings_identified || 0} /></strong> unregistered constructions via spatial reconciliation.
+            {t.taxDesc}
           </p>
         </div>
         <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--status-green)', fontFamily: "'Inter', system-ui, sans-serif", textShadow: '0 0 20px rgba(16,185,129,0.3)' }}>
@@ -193,11 +196,11 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Datasets Table */}
+      {/* Data Pipelines */}
       <div className="panel-card" style={{ animation: 'slideIn .5s .6s both' }}>
-        <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Shield size={18} color="var(--accent-primary)" />
-          Loaded Datasets
+        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <BarChart3 size={18} color="var(--accent-primary)" />
+          {t.datasets}
         </h2>
         {datasets.length === 0 ? (
           <div style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-secondary)', background: 'rgba(0,0,0,0.15)', borderRadius: 8, fontSize: 13, border: '1px dashed var(--border-color)' }}>

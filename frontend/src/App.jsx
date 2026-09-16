@@ -11,6 +11,8 @@ import ReconciliationMap from './pages/ReconciliationMap';
 import ReviewQueue from './pages/ReviewQueue';
 import Provenance from './pages/Provenance';
 import Settings from './pages/Settings';
+import CitizenPortal from './pages/CitizenPortal';
+import { translations } from './translations';
 import './index.css';
 
 // Global Toast Event Dispatcher Helper
@@ -20,7 +22,8 @@ export const triggerToast = (msg, type = 'info') => {
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [userRole, setUserRole] = useState('chief_approver'); // 'chief_approver' or 'field_surveyor'
+  const [userRole, setUserRole] = useState('chief_approver');
+  const [lang, setLang] = useState('en');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedMatchId, setSelectedMatchId] = useState(null);
@@ -44,12 +47,13 @@ function App() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'dashboard': return <Dashboard />;
-      case 'analytics': return <AnalyticsDashboard />;
+      case 'dashboard': return <Dashboard lang={lang} />;
+      case 'analytics': return <AnalyticsDashboard lang={lang} />;
       case 'drone': return <DroneFeed />;
       case 'blockchain': return <BlockchainLedger />;
       case 'export': return <ExportCadastral />;
       case 'settings': return <Settings />;
+      case 'citizen': return <CitizenPortal lang={lang} />;
       case 'workspace': 
         return (
           <div style={{ display: 'flex', gap: '20px', height: 'calc(100vh - 120px)' }}>
@@ -58,6 +62,7 @@ function App() {
                   onMatchComplete={() => setRefreshKey(prev => prev + 1)} 
                   selectedMatchId={selectedMatchId}
                   refreshKey={refreshKey}
+                  lang={lang}
                 />
              </div>
              <div style={{ flex: '1 1 35%', minWidth: '300px', overflowY: 'auto', paddingRight: '5px' }} className="custom-scrollbar">
@@ -67,6 +72,7 @@ function App() {
                   selectedMatchId={selectedMatchId}
                   onSelectMatch={setSelectedMatchId}
                   onReviewSubmit={() => setRefreshKey(prev => prev + 1)}
+                  lang={lang}
                 />
              </div>
           </div>
@@ -92,11 +98,12 @@ function App() {
         setActiveTab={setActiveTab} 
         isOpen={sidebarOpen} 
         closeSidebar={closeSidebar} 
+        lang={lang}
       />
 
       <main className="main-content">
         {/* Top Header */}
-        <header style={{ 
+        <header className="hide-on-print" style={{ 
           display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
           padding: '12px 20px', background: 'var(--bg-secondary)', 
           borderBottom: '1px solid var(--border-color)', marginBottom: '20px',
@@ -112,7 +119,23 @@ function App() {
           </button>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: 'auto' }}>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', display: 'none', '@media(min-width: 640px)': { display: 'inline' } }}>Demo Role:</span>
+            <select 
+              className="form-input" 
+              style={{ width: 'auto', padding: '6px 12px', background: 'var(--bg-glass)', fontWeight: 'bold' }}
+              value={lang}
+              onChange={(e) => setLang(e.target.value)}
+              aria-label="Select Language"
+            >
+              <option value="en">🌐 English</option>
+              <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+              <option value="te">🇮🇳 తెలుగు (Telugu)</option>
+            </select>
+            
+            <div style={{ width: '1px', height: '24px', background: 'var(--border-color)', margin: '0 5px' }}></div>
+            
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', display: 'none', '@media(min-width: 640px)': { display: 'inline' } }}>
+              {translations[lang]?.header.role || "Role:"}
+            </span>
             <select 
               className="form-input" 
               style={{ width: 'auto', padding: '6px 12px' }}
@@ -120,8 +143,8 @@ function App() {
               onChange={(e) => setUserRole(e.target.value)}
               aria-label="Select User Role"
             >
-              <option value="chief_approver">👑 Chief Approver</option>
-              <option value="field_surveyor">🚶‍♂️ Field Surveyor</option>
+              <option value="chief_approver">{translations[lang]?.header.approver || "👑 Chief Approver"}</option>
+              <option value="field_surveyor">{translations[lang]?.header.surveyor || "🚶‍♂️ Field Surveyor"}</option>
             </select>
           </div>
         </header>
