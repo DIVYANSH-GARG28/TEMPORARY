@@ -221,3 +221,46 @@ def get_financials(db: Session = Depends(get_db)):
             "entity_type_conflict": stats_dict.get("REJECTED", 0)
         }
     }
+
+@router.get("/case/{entity_id}")
+def get_audit_case(entity_id: int, db: Session = Depends(get_db)):
+    """
+    SIH26013 - Evidence Packet API
+    Returns the full Explainable Audit Trail for a specific entity.
+    """
+    entity = db.query(models.LandEntity).filter(models.LandEntity.id == entity_id).first()
+    if not entity:
+        return {"error": "Case not found"}
+        
+    conflicts = db.query(models.EntityConflict).filter(models.EntityConflict.canonical_entity_id == entity_id).all()
+    audits = db.query(models.AuditLog).filter(models.AuditLog.entity_id == entity_id).order_by(models.AuditLog.created_at.desc()).all()
+    
+    return {
+        "case_id": f"AUDIT-{entity.id}",
+        "parcel_id": entity.canonical_id,
+        "status": entity.status,
+        "match_type": entity.match_type,
+        "confidence": {
+            "overall": f"{entity.overall_confidence:.1f}%",
+            "spatial_match": f"{entity.spatial_evidence:.1f}%",
+            "attribute_match": f"{entity.attribute_evidence:.1f}%",
+            "reason": entity.confidence_reason
+        },
+        "conflicts": [
+            {
+                "type": c.conflict_type,
+                "severity": c.severity,
+                "description": c.description,
+                "evidence": c.evidence,
+                "recommended_action": c.recommended_action
+            } for c in conflicts
+        ],
+        "audit_trail": [
+            {
+                "timestamp": a.created_at.isoformat(),
+                "action": a.action,
+                "actor": a.actor,
+                "reason": a.reason
+            } for a in audits
+        ]
+    }

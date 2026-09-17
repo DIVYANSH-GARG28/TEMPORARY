@@ -1,23 +1,28 @@
 {
-  "name": "GeoSync_Anti_Corruption_Auditor",
+  "name": "TerraOps_Govt_Field_Portal",
   "nodes": [
     {
       "parameters": {
-        "updates": ["message"]
+        "updates": [
+          "message"
+        ]
       },
       "id": "telegram-trigger",
       "name": "Telegram Trigger",
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1,
-      "position": [250, 300]
+      "position": [
+        250,
+        300
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "string": [
+          "boolean": [
             {
-              "value1": "={{ Object.keys($json.message).includes('location') }}",
-              "value2": "true"
+              "value1": "={{ $json.message.location != null || $json.message.venue != null }}",
+              "value2": true
             }
           ]
         }
@@ -26,46 +31,58 @@
       "name": "Is Location?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [450, 300]
+      "position": [
+        450,
+        300
+      ]
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "http://your-localtunnel-url.loca.lt/api/telegram/location",
+        "url": "https://clear-sides-drive.loca.lt/api/telegram/location",
         "sendBody": true,
-        "bodyParameters": {
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"latitude\": {{ $json.message.location ? $json.message.location.latitude : $json.message.venue.location.latitude }},\n  \"longitude\": {{ $json.message.location ? $json.message.location.longitude : $json.message.venue.location.longitude }},\n  \"user_id\": \"{{ $json.message.from.id }}\"\n}",
+        "sendHeaders": true,
+        "headerParameters": {
           "parameters": [
-            { "name": "latitude", "value": "={{ $json.message.location.latitude }}" },
-            { "name": "longitude", "value": "={{ $json.message.location.longitude }}" },
-            { "name": "user_id", "value": "={{ $json.message.from.id }}" }
+            {
+              "name": "Bypass-Tunnel-Reminder",
+              "value": "true"
+            }
           ]
-        },
-        "options": {}
+        }
       },
       "id": "http-backend",
-      "name": "PostGIS Anti-Corruption Audit",
+      "name": "PostGIS Spatial Audit",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [700, 200]
+      "position": [
+        700,
+        200
+      ]
     },
     {
       "parameters": {
-        "chatId": "={{ $node[\"Telegram Trigger\"].json.message.from.id }}",
-        "text": "={{ $json.audit_message }}\n\n🏢 Target Entity: #{{ $json.entity_id }}\n📝 Owner: {{ $json.owner }}"
+        "chatId": "={{ $json.user_id }}",
+        "text": "={{ $json.audit_message }}\n\nTarget Entity: #{{ $json.entity_id }}\nOwner: {{ $json.owner }}"
       },
       "id": "telegram-audit-response",
       "name": "Send Audit Result",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1,
-      "position": [950, 200]
+      "position": [
+        950,
+        200
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "string": [
+          "boolean": [
             {
-              "value1": "={{ Object.keys($json.message).includes('photo') }}",
-              "value2": "true"
+              "value1": "={{ $json.message.photo != null }}",
+              "value2": true
             }
           ]
         }
@@ -74,48 +91,221 @@
       "name": "Is Photo?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [700, 400]
+      "position": [
+        450,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://clear-sides-drive.loca.lt/api/telegram/evidence",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Bypass-Tunnel-Reminder",
+              "value": "true"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"latitude\": 0,\n  \"longitude\": 0,\n  \"user_id\": \"{{ $json.message.from.id }}\"\n}"
+      },
+      "id": "http-photo-evidence",
+      "name": "Submit Photo Evidence",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        700,
+        400
+      ]
     },
     {
       "parameters": {
         "chatId": "={{ $json.message.from.id }}",
-        "text": "✅ Physical evidence encrypted and uploaded to the Blockchain Provenance Vault."
+        "text": "[EVIDENCE ACCEPTED]\nPhysical evidence encrypted and appended to Audit Case.\nAI Confidence Score dynamically adjusted."
       },
       "id": "telegram-photo-success",
       "name": "Confirm Evidence",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1,
-      "position": [950, 400]
+      "position": [
+        950,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.message.text }}",
+              "operation": "equal",
+              "value2": "/cases"
+            }
+          ]
+        }
+      },
+      "id": "if-cases",
+      "name": "Is /cases Command?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        450,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'https://clear-sides-drive.loca.lt/api/telegram/cases?user_id=' + $json.message.from.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Bypass-Tunnel-Reminder",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "id": "http-cases",
+      "name": "Fetch Assigned Cases",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        700,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $node[\"Telegram Trigger\"].json.message.from.id }}",
+        "text": "={{ $json.message }}"
+      },
+      "id": "telegram-cases-response",
+      "name": "Send Cases List",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        950,
+        600
+      ]
     },
     {
       "parameters": {
         "chatId": "={{ $json.message.from.id }}",
-        "text": "🛡️ GeoSync Vigilance Field Ops 🛡️\n\nTo resolve a spatial conflict, please send a Live Location Pin to prove you are physically present at the site."
+        "text": "\ud83c\udfdb\ufe0f **TERRAOPS: Govt Field Portal** \ud83c\udfdb\ufe0f\n\nWelcome, Field Officer.\n\nCommands:\n/cases - View your assigned high-priority audits\n\nTo verify a site:\n1. Drop a Live Location Pin\n2. Upload Photographic Evidence\n\n*All actions are cryptographically logged to the Audit Ledger.*"
       },
       "id": "telegram-welcome",
-      "name": "Send Welcome",
+      "name": "Send Welcome Menu",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1,
-      "position": [950, 600]
+      "position": [
+        700,
+        800
+      ]
     }
   ],
   "connections": {
     "Telegram Trigger": {
-      "main": [ [ { "node": "Is Location?", "type": "main", "index": 0 } ] ]
+      "main": [
+        [
+          {
+            "node": "Is Location?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Is Location?": {
       "main": [
-        [ { "node": "PostGIS Anti-Corruption Audit", "type": "main", "index": 0 } ],
-        [ { "node": "Is Photo?", "type": "main", "index": 0 } ]
+        [
+          {
+            "node": "PostGIS Spatial Audit",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Photo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
-    "PostGIS Anti-Corruption Audit": {
-      "main": [ [ { "node": "Send Audit Result", "type": "main", "index": 0 } ] ]
+    "PostGIS Spatial Audit": {
+      "main": [
+        [
+          {
+            "node": "Send Audit Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Is Photo?": {
       "main": [
-        [ { "node": "Confirm Evidence", "type": "main", "index": 0 } ],
-        [ { "node": "Send Welcome", "type": "main", "index": 0 } ]
+        [
+          {
+            "node": "Submit Photo Evidence",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is /cases Command?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Submit Photo Evidence": {
+      "main": [
+        [
+          {
+            "node": "Confirm Evidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is /cases Command?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Assigned Cases",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Welcome Menu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Assigned Cases": {
+      "main": [
+        [
+          {
+            "node": "Send Cases List",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   }

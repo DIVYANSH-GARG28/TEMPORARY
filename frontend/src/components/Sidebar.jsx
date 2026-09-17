@@ -75,10 +75,16 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, closeSidebar,
           {t.system}
         </div>
         <button 
+          className={`nav-item ${activeTab === 'database' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('database'); closeSidebar(); }}
+        >
+          <Database size={20} /> DB Explorer
+        </button>
+        <button 
           className={`nav-item ${activeTab === 'provenance' ? 'active' : ''}`}
           onClick={() => { setActiveTab('provenance'); closeSidebar(); }}
         >
-          <Database size={20} /> {t.provenance}
+          <ShieldCheck size={20} /> {t.provenance}
         </button>
         <button 
           className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}

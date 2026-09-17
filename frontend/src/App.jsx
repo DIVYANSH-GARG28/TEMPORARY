@@ -10,6 +10,7 @@ import DataWorkspace from './pages/DataWorkspace';
 import ReconciliationMap from './pages/ReconciliationMap';
 import ReviewQueue from './pages/ReviewQueue';
 import Provenance from './pages/Provenance';
+import DatabaseViewer from './pages/DatabaseViewer';
 import Settings from './pages/Settings';
 import CitizenPortal from './pages/CitizenPortal';
 import { translations } from './translations';
@@ -78,6 +79,7 @@ function App() {
           </div>
         );
       case 'provenance': return <Provenance />;
+      case 'database': return <DatabaseViewer />;
       default: return <Dashboard />;
     }
   };
