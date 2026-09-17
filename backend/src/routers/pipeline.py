@@ -12,75 +12,76 @@ class PipelinePayload(BaseModel):
 
 def generate_messy_demo_data():
     """
-    SIH26013 - Generates ~100 synthetic legacy land records with intentional
+    SIH26013 - Fetches REAL OSM buildings and injects intentional
     dirty data patterns to prove the normalization and spatial validation engine works.
     """
+    from src.routers.ingest import fetch_overpass_data, get_bounding_box, IngestRequest
+    from shapely.geometry import Polygon
+    import pyproj
+    from shapely.ops import transform
+    
+    # 1. Fetch real OSM data for Dwarka/Delhi area (smaller bounding box to pass limit)
+    req = IngestRequest(min_lat=28.63, min_lon=77.08, max_lat=28.64, max_lon=77.09)
+    bounds = get_bounding_box(req)
+    osm_data = fetch_overpass_data(bounds, date_str=None)
+    
+    if not osm_data:
+        # Fallback to hardcoded if OSM is down
+        return [{"Khatedar": "OSM API FAILED", "SurveyNo": "ERR-1", "Area_Hectares": "1", "Village": "Error", "Geometry_WKT": "POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))"}]
+        
+    nodes = {node['id']: (node['lon'], node['lat']) for node in osm_data.get('elements', []) if node['type'] == 'node'}
+    ways = [way for way in osm_data.get('elements', []) if way['type'] == 'way']
+    
     records = []
     
-    # 1. Clean records (Base)
-    for i in range(85):
-        records.append({
-            "Khatedar": f"Owner {100+i}",
-            "SurveyNo": f"SUR-{1000+i}",
-            "Area_Hectares": f"{random.uniform(0.1, 5.0):.2f}",
-            "Village": "Cyber City",
-            "Geometry_WKT": f"POLYGON(({77.0+i*0.001} {28.0}, {77.0+(i+1)*0.001} {28.0}, {77.0+(i+1)*0.001} {28.001}, {77.0+i*0.001} {28.001}, {77.0+i*0.001} {28.0}))"
-        })
-        
-    # 2. Messy Strings & OCR errors
-    records.append({
-        "Khatedar": "  RAJESH   KUMAR  ", # Whitespace mess
-        "SurveyNo": "SUR-1081",
-        "Area_Hectares": "1.25 ha", # Unit inside numeric column
-        "Village": "CYBER CITY",
-        "Geometry_WKT": "POLYGON((77.1 28.1, 77.11 28.1, 77.11 28.11, 77.1 28.11, 77.1 28.1))"
-    })
-    
-    # 3. Missing Fields
-    records.append({
-        "Khatedar": "", 
-        "SurveyNo": "SUR-1082",
-        "Area_Hectares": "0.5",
-        "Village": None,
-        "Geometry_WKT": "POLYGON((77.12 28.1, 77.13 28.1, 77.13 28.11, 77.12 28.11, 77.12 28.1))"
-    })
-    
-    # 4. Spatial Errors: Self-Intersection (Bowtie polygon)
-    records.append({
-        "Khatedar": "Municipal Corp", 
-        "SurveyNo": "SUR-1083",
-        "Area_Hectares": "1.0",
-        "Village": "Cyber City",
-        "Geometry_WKT": "POLYGON((77.13 28.1, 77.14 28.11, 77.14 28.1, 77.13 28.11, 77.13 28.1))" # Bowtie
-    })
-    
-    # 5. Spatial Errors: Overlapping Polygon
-    records.append({
-        "Khatedar": "Disputed Owner", 
-        "SurveyNo": "SUR-1084",
-        "Area_Hectares": "1.0",
-        "Village": "Cyber City",
-        "Geometry_WKT": "POLYGON((77.125 28.105, 77.135 28.105, 77.135 28.115, 77.125 28.115, 77.125 28.105))" # Overlaps
-    })
-    
-    # 6. Spatial Errors: Invalid Coordinates (Lat 999)
-    records.append({
-        "Khatedar": "System Glitch Ltd", 
-        "SurveyNo": "SUR-1085",
-        "Area_Hectares": "1.0",
-        "Village": "Cyber City",
-        "Geometry_WKT": "POLYGON((999 999, 1000 999, 1000 1000, 999 1000, 999 999))"
-    })
-    
-    # 7. Duplicate Survey Numbers
-    records.append({
-        "Khatedar": "Fraudulent Claim", 
-        "SurveyNo": "SUR-1010", # Duplicate of earlier record
-        "Area_Hectares": "1.0",
-        "Village": "Cyber City",
-        "Geometry_WKT": "POLYGON((77.2 28.2, 77.21 28.2, 77.21 28.21, 77.2 28.21, 77.2 28.2))"
-    })
-    
+    for i, way in enumerate(ways[:120]): # Limit to 120 records
+        coords = [nodes[nid] for nid in way.get('nodes', []) if nid in nodes]
+        if len(coords) >= 3:
+            if coords[0] != coords[-1]:
+                coords.append(coords[0])
+            poly = Polygon(coords)
+            if not poly.is_valid or poly.area == 0:
+                continue
+                
+            tags = way.get('tags', {})
+            owner = tags.get('name') or tags.get('building:name') or f"Owner {100+i}"
+            
+            # Project to 3857 for realistic WKT
+            project_to_3857 = pyproj.Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True).transform
+            poly_3857 = transform(project_to_3857, poly)
+            wkt = poly_3857.wkt
+            
+            record = {
+                "Khatedar": owner,
+                "SurveyNo": f"SUR-{1000+i}",
+                "Area_Hectares": f"{poly_3857.area / 10000:.2f}",
+                "Village": "Dwarka Sector 11",
+                "Geometry_WKT": wkt
+            }
+            
+            # Inject dirty data into every 5th record
+            if i == 5:
+                record["Khatedar"] = f"  {owner.upper()}   " # Whitespace & case error
+                record["Area_Hectares"] = f"{record['Area_Hectares']} ha" # Unit error
+            elif i == 10:
+                record["Khatedar"] = "" # Missing Owner
+            elif i == 15:
+                record["Geometry_WKT"] = "POLYGON((999 999, 1000 999, 1000 1000, 999 1000, 999 999))" # Invalid Geometry
+            elif i == 20:
+                # Bowtie Polygon (Self-Intersection)
+                record["Geometry_WKT"] = "POLYGON((8587121 3328221, 8587150 3328250, 8587150 3328221, 8587121 3328250, 8587121 3328221))"
+            elif i == 25:
+                record["SurveyNo"] = "SUR-1010" # Duplicate
+                
+            records.append(record)
+            
+    # Add a guaranteed overlapping record
+    if len(records) > 30:
+        overlap_rec = records[2].copy()
+        overlap_rec["Khatedar"] = "Disputed Owner"
+        overlap_rec["SurveyNo"] = "SUR-9999"
+        records.append(overlap_rec)
+            
     return records
 
 @router.get("/demo-data")
@@ -230,7 +231,7 @@ def commit_validated_data(payload: dict, db: Session = Depends(get_db)):
     
     req = IngestRequest(
         min_lat=28.63, min_lon=77.08,
-        max_lat=28.65, max_lon=77.10
+        max_lat=28.64, max_lon=77.09
     )
     # Actually just call ingest area so the dashboard works
     ingest_area(req=req, db=db)
