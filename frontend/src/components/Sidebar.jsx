@@ -18,7 +18,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, closeSidebar,
         )}
       </div>
       
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1.5rem' }}>
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1.5rem', flex: 1, overflowY: 'auto' }} className="custom-scrollbar">
         <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0 1rem', marginBottom: '0.5rem' }}>
           {t.core}
         </div>
@@ -36,10 +36,22 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, closeSidebar,
           <ShieldCheck size={20} /> {t.citizen}
         </button>
         <button 
+          className={`nav-item ${activeTab === 'database' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('database'); closeSidebar(); }}
+        >
+          <Database size={20} /> {t.database || "Manual DB Ledger"}
+        </button>
+        <button 
+          className={`nav-item ${activeTab === 'ingest' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('ingest'); closeSidebar(); }}
+        >
+          <Database size={20} /> {t.ingest || "Data Ingestion"}
+        </button>
+        <button 
           className={`nav-item ${activeTab === 'workspace' ? 'active' : ''}`}
           onClick={() => { setActiveTab('workspace'); closeSidebar(); }}
         >
-          <Search size={20} /> {t.workspace}
+          <Search size={20} /> Active Workspace
         </button>
         <button 
           className={`nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
@@ -74,12 +86,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, closeSidebar,
         <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0 1rem', marginTop: '1.5rem', marginBottom: '0.5rem' }}>
           {t.system}
         </div>
-        <button 
-          className={`nav-item ${activeTab === 'database' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('database'); closeSidebar(); }}
-        >
-          <Database size={20} /> DB Explorer
-        </button>
+
         <button 
           className={`nav-item ${activeTab === 'provenance' ? 'active' : ''}`}
           onClick={() => { setActiveTab('provenance'); closeSidebar(); }}

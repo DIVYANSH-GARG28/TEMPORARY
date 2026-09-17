@@ -1,9 +1,11 @@
 export const translations = {
   en: {
     sidebar: {
-      core: "Core Modules",
+      core: "CORE MODULES",
       dashboard: "System Dashboard",
       citizen: "Citizen G2C Portal",
+      database: "Manual DB Ledger",
+      ingest: "Data Ingestion",
       workspace: "Active Workspace",
       analytics: "Tax Leakage Analytics",
       enterprise: "Enterprise Integrations",
@@ -88,6 +90,8 @@ export const translations = {
       core: "मुख्य मॉड्यूल",
       dashboard: "सिस्टम डैशबोर्ड",
       citizen: "नागरिक G2C पोर्टल",
+      database: "मैनुअल डेटाबेस लेजर",
+      ingest: "डेटा इंजेशन",
       workspace: "सक्रिय कार्यक्षेत्र",
       analytics: "कर रिसाव विश्लेषण",
       enterprise: "एंटरप्राइज़ एकीकरण",
@@ -172,6 +176,8 @@ export const translations = {
       core: "కోర్ మాడ్యూల్స్",
       dashboard: "సిస్టమ్ డాష్‌బోర్డ్",
       citizen: "సిటిజన్ G2C పోర్టల్",
+      database: "మాన్యువల్ డేటాబేస్ లెడ్జర్",
+      ingest: "డేటా ఇంజెషన్",
       workspace: "క్రియాశీల వర్క్‌స్పేస్",
       analytics: "పన్ను లీకేజీ విశ్లేషణ",
       enterprise: "ఎంటర్‌ప్రైజ్ ఇంటిగ్రేషన్స్",

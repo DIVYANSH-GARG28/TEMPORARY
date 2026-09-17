@@ -11,6 +11,7 @@ import ReconciliationMap from './pages/ReconciliationMap';
 import ReviewQueue from './pages/ReviewQueue';
 import Provenance from './pages/Provenance';
 import DatabaseViewer from './pages/DatabaseViewer';
+import DataPipeline from './pages/DataPipeline';
 import Settings from './pages/Settings';
 import CitizenPortal from './pages/CitizenPortal';
 import { translations } from './translations';
@@ -55,6 +56,8 @@ function App() {
       case 'export': return <ExportCadastral />;
       case 'settings': return <Settings />;
       case 'citizen': return <CitizenPortal lang={lang} />;
+      case 'database': return <DatabaseViewer />;
+      case 'ingest': return <DataPipeline onComplete={() => { setActiveTab('workspace'); setRefreshKey(prev => prev + 1); }} />;
       case 'workspace': 
         return (
           <div style={{ display: 'flex', gap: '20px', height: 'calc(100vh - 120px)' }}>

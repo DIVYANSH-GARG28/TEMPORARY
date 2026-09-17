@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Database, Search, Filter, ArrowUpDown } from 'lucide-react';
-import { getReconciliationResults } from '../api';
+import axios from 'axios';
+
+const getApiUrl = () => {
+  const url = import.meta.env.VITE_API_URL;
+  if (!url) return 'http://localhost:8000/api';
+  return url.endsWith('/api') ? url : `${url}/api`;
+};
+const API = getApiUrl();
 
 export default function DatabaseViewer() {
   const [data, setData] = useState([]);
@@ -14,7 +21,7 @@ export default function DatabaseViewer() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await getReconciliationResults();
+      const response = await axios.get(`${API}/reconciliation/results`);
       setData(response.data || []);
     } catch (error) {
       console.error("Failed to fetch database records:", error);
@@ -29,7 +36,7 @@ export default function DatabaseViewer() {
   );
 
   return (
-    <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', height: '100%', animation: 'fadeIn 0.5s ease-out' }}>
+    <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', flex: 1, height: 'calc(100vh - 120px)', animation: 'fadeIn 0.5s ease-out' }}>
       
       {/* Apple-grade Header */}
       <div style={{ 
