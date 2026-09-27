@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ShieldCheck, Link, Server, Key, Lock, Loader2 } from 'lucide-react';
 
+const getApiUrl = () => { const url = import.meta.env.VITE_API_URL; if (!url) return 'http://localhost:8000/api'; return url.endsWith('/api') ? url : url+'/api'; };
+const API = getApiUrl();
+
 export default function BlockchainLedger() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/audit/ledger')
+    axios.get(`${API}/audit/ledger`)
       .then(res => {
         setLogs(res.data);
         setLoading(false);

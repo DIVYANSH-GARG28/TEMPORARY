@@ -61,7 +61,11 @@ def verify_surveyor_location(payload: LocationPayload, db: Session = Depends(get
             "status": entity.status,
             "owner": owner_name,
             "audit_status": "PASSED",
-            "audit_message": f"[SPATIAL AUDIT PASSED]\nGround Truth mathematically matches Drone AI Geometry (Distance: {distance:.1f}m).\nYou are authorized to upload physical evidence."
+            "audit_message": f"""✅ [SPATIAL AUDIT PASSED] ✅
+
+Ground Truth mathematically matches the AI Drone Geometry (Distance: {distance:.1f}m).
+
+Your physical presence is verified. You are now authorized to upload photographic evidence for Entity #{entity.id}."""
         }
     else:
         # Fraud detected - Surveyor is too far away
@@ -71,7 +75,13 @@ def verify_surveyor_location(payload: LocationPayload, db: Session = Depends(get
             "status": entity.status,
             "owner": owner_name,
             "audit_status": "FRAUD_ALERT",
-            "audit_message": f"[FRAUD ALERT] Ghost Surveying Detected.\n\nYou are {distance:.1f} meters away from the true boundary of Entity #{entity.id}. You must be physically present on the site to resolve disputes.\nYour Surveyor ID has been flagged to the Vigilance Dashboard."
+            "audit_message": f"""🚨 [FRAUD ALERT: REMOTE APPROVAL DETECTED] 🚨
+
+GPS math indicates you are {distance:.1f} meters away from the true AI boundary of Entity #{entity.id}. 
+
+You cannot approve a property while sitting at a remote location. You must be physically standing on the property boundary to proceed.
+
+⚠️ Incident logged to the Vigilance Dashboard."""
         }
         
     # Valid location
@@ -81,7 +91,11 @@ def verify_surveyor_location(payload: LocationPayload, db: Session = Depends(get
         "status": entity.status,
         "owner": entity.attributes.get("owner_name", "Unknown"),
         "audit_status": "VALID",
-        "audit_message": f"[SUCCESS] Location Verified.\n\nYou are {distance:.1f} meters from Entity #{entity.id}, which is within the acceptable 50m radius. You may now proceed to upload photographic evidence."
+        "audit_message": f"""✅ [SPATIAL AUDIT PASSED] ✅
+
+Ground Truth mathematically matches the AI Drone Geometry (Distance: {distance:.1f}m).
+
+Your physical presence is verified. You are now authorized to upload photographic evidence for Entity #{entity.id}."""
     }
 @router.post("/evidence")
 def upload_evidence(payload: LocationPayload, db: Session = Depends(get_db)):
@@ -99,7 +113,7 @@ def upload_evidence(payload: LocationPayload, db: Session = Depends(get_db)):
         db.add(audit)
         db.commit()
         
-    return {"status": "success", "message": "Evidence attached to Audit Case"}
+    return {"status": "success", "message": "Evidence attached to Audit Case", "chat_id": payload.user_id}
 
 @router.get("/cases")
 def get_pending_cases(user_id: str, db: Session = Depends(get_db)):
@@ -111,15 +125,15 @@ def get_pending_cases(user_id: str, db: Session = Depends(get_db)):
     cases = db.query(LandEntity).filter(LandEntity.status == "PENDING_REVIEW").limit(3).all()
     
     if not cases:
-        return {"message": "✅ No pending field verification cases assigned to you."}
+        return {"message": "✅ No pending field verification cases assigned to you.", "chat_id": user_id}
         
-    response = "📋 **YOUR PENDING FIELD ASSIGNMENTS**\n\n"
+    response = "📋 <b>YOUR PENDING FIELD ASSIGNMENTS</b>\n\n"
     for c in cases:
         owner = c.attributes.get("owner_name", "Unknown") if c.attributes else "Unknown"
-        response += f"🏢 **Entity ID:** #{c.id}\n"
-        response += f"👤 **Claimed Owner:** {owner}\n"
-        response += f"⚠️ **Conflict Type:** {c.match_type}\n"
-        response += f"📉 **AI Confidence:** {c.overall_confidence:.1f}%\n"
-        response += "📍 *Action Required:* Visit site and submit GPS + Photo\n\n"
+        response += f"🏢 <b>Entity ID:</b> {c.id}\n"
+        response += f"👤 <b>Claimed Owner:</b> {owner}\n"
+        response += f"⚠️ <b>Conflict Type:</b> {c.match_type}\n"
+        response += f"📉 <b>AI Confidence:</b> {c.overall_confidence:.1f}%\n"
+        response += "📍 <i>Action Required: Visit site and submit GPS + Photo</i>\n\n"
         
-    return {"message": response}
+    return {"message": response, "chat_id": user_id}

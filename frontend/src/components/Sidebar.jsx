@@ -1,4 +1,4 @@
-import { LayoutDashboard, Map, Settings, X, Search, ShieldCheck, Database, Camera, TrendingDown, FileDown } from 'lucide-react';
+import { LayoutDashboard, Map, Settings, X, Search, ShieldCheck, Database, Camera, TrendingDown, FileDown, Network } from 'lucide-react';
 import { translations } from '../translations';
 
 export default function Sidebar({ activeTab, setActiveTab, isOpen, closeSidebar, lang }) {
@@ -23,6 +23,12 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, closeSidebar,
           {t.core}
         </div>
         
+        <button 
+          className={`nav-item ${activeTab === 'connectome' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('connectome'); closeSidebar(); }}
+        >
+          <Network size={20} color="#a855f7" /> {t.connectome || "FlyWire AI Connectome"}
+        </button>
         <button 
           className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
           onClick={() => { setActiveTab('dashboard'); closeSidebar(); }}
@@ -51,7 +57,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, closeSidebar,
           className={`nav-item ${activeTab === 'workspace' ? 'active' : ''}`}
           onClick={() => { setActiveTab('workspace'); closeSidebar(); }}
         >
-          <Search size={20} /> Active Workspace
+          <Search size={20} /> {t.workspace || "Active Workspace"}
         </button>
         <button 
           className={`nav-item ${activeTab === 'analytics' ? 'active' : ''}`}

@@ -264,6 +264,7 @@ export default function DroneFeed() {
             color: 'var(--text-primary, #f8fafc)',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
         }}>
+        <div style={{ background: '#fef3c7', color: '#92400e', padding: '1rem', borderRadius: '4px', boxShadow: '2px 2px 5px rgba(0,0,0,0.1)', transform: 'rotate(1deg)', display: 'block', margin: '0 auto 2rem', borderLeft: '4px solid #f59e0b', maxWidth: '600px', fontFamily: '"Comic Sans MS", "Chalkboard SE", sans-serif', textAlign: 'center', position: 'relative', zIndex: 100 }}><strong>📌 Proof of Concept:</strong> This Geo AI vision system is currently utilizing a <strong>Mobile IP Camera</strong> to mimic physical drone hardware. In the final deployment, it will be directly integrated with live <strong>UAV/Drone Imagery</strong> arrays.</div>
             <style>{`
                 @keyframes pulse-red {
                     0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
@@ -449,7 +450,7 @@ export default function DroneFeed() {
                                             width: '100%',
                                             background: 'var(--bg-primary, #0f172a)',
                                             border: '1px solid var(--border-color, #334155)',
-                                            color: '#fff',
+                                            color: 'var(--text-primary)',
                                             padding: '0.5rem 1rem 0.5rem 2.5rem',
                                             borderRadius: '6px',
                                             outline: 'none'
@@ -496,11 +497,10 @@ export default function DroneFeed() {
                                     <>
                                         {/* Real IP Camera proxying through backend YOLO model */}
                                         {streamUrl.startsWith('http') ? (
-                                            <img 
+                                                <img 
                                                 src={streamUrl} 
                                                 alt="Live Drone Feed" 
                                                 style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} 
-                                                crossOrigin="anonymous"
                                                 onError={(e) => { e.target.style.display = 'none'; triggerToast("Stream failed to load. Is the IP Cam on the same network?", "error"); setConnectionStatus('disconnected'); }}
                                             />
                                         ) : (
@@ -585,7 +585,7 @@ export default function DroneFeed() {
                                                 onClick={handleCaptureFrame}
                                                 style={{
                                                     background: 'var(--accent-primary, #3b82f6)',
-                                                    color: '#fff',
+                                                    color: 'var(--text-primary)',
                                                     border: 'none',
                                                     padding: '1rem 2rem',
                                                     borderRadius: '999px',
@@ -624,7 +624,7 @@ export default function DroneFeed() {
                                         onClick={startPipeline}
                                         style={{
                                             background: 'var(--accent-primary, #3b82f6)',
-                                            color: '#fff',
+                                            color: 'var(--text-primary)',
                                             border: 'none',
                                             padding: '0.75rem 1.5rem',
                                             borderRadius: '8px',
@@ -797,7 +797,7 @@ export default function DroneFeed() {
                                 style={{
                                     width: '100%',
                                     background: 'var(--accent-primary, #3b82f6)',
-                                    color: '#fff',
+                                    color: 'var(--text-primary)',
                                     border: 'none',
                                     padding: '0.75rem',
                                     borderRadius: '6px',

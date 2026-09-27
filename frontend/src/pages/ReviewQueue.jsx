@@ -1,16 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Check, X, AlertOctagon, Loader2, ChevronRight, Shield, Eye, Zap, MapPin } from 'lucide-react';
 import axios from 'axios';
-
-const API = 'http://localhost:8000/api';
 import { translations } from '../translations';
+
+const getApiUrl = () => { const url = import.meta.env.VITE_API_URL; if (!url) return 'http://localhost:8000/api'; return url.endsWith('/api') ? url : url+'/api'; };
+const API = getApiUrl();
 
 export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onSelectMatch, onReviewSubmit, lang = 'en' }) {
   const [entities, setEntities] = useState([]);
   const [conflicts, setConflicts] = useState([]);
   const [loading, setLoading] = useState(true);
+    const cardRefs = useRef({});
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
+  const [aiInsights, setAiInsights] = useState({});
+  const [insightLoading, setInsightLoading] = useState(null);
+  
+  const [visionInsights, setVisionInsights] = useState({});
+  const [visionLoading, setVisionLoading] = useState(null);
+  
   const t = translations[lang]?.review || translations['en'].review;
 
   const fetchData = async () => {
@@ -36,10 +44,45 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
     }
   };
 
+  const getAiInsight = async (e, entityId) => {
+    e.stopPropagation();
+    setInsightLoading(entityId);
+    try {
+      const res = await axios.get(`${API}/ai/analyze-fraud/${entityId}?lang=${lang}`);
+      setAiInsights(prev => ({...prev, [entityId]: res.data}));
+    } catch (err) {
+      setAiInsights(prev => ({...prev, [entityId]: { risk_level: "Error", analysis: "Failed to connect to AI Engine." }}));
+    }
+    setInsightLoading(null);
+  };
+  
+  const handlePhotoUpload = async (e, entityId) => {
+    e.stopPropagation();
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setVisionLoading(entityId);
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const res = await axios.post(`${API}/ai/vision-analyze/${entityId}?lang=${lang}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setVisionInsights(prev => ({...prev, [entityId]: res.data}));
+    } catch (err) {
+      console.error(err);
+      setVisionInsights(prev => ({...prev, [entityId]: { error: true, vision_analysis: "Vision API failed." }}));
+    }
+    setVisionLoading(null);
+  };
+
   useEffect(() => { fetchData(); }, [refreshKey]);
 
   const handleAction = async (e, entityId, actionType) => {
     e.stopPropagation();
+    
+    // Frontend block (can be bypassed by malicious requests)
     if (userRole === 'field_surveyor') {
       setError("Permission Denied: Field Surveyors can only view conflicts.");
       return;
@@ -50,7 +93,7 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
     try {
       await axios.post(`${API}/audit/entity/${entityId}/review`, {
         action: actionType,
-        reviewer: "SIH_Judge",
+        reviewer: userRole === 'field_surveyor' ? "Field_Surveyor" : "SIH_Judge",
         reason: "Manual review override"
       });
       await fetchData();
@@ -58,7 +101,7 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
       if (onReviewSubmit) onReviewSubmit();
     } catch (err) {
       console.error(err);
-      setError("Error saving review to the provenance ledger.");
+      setError("Security Error: " + (err.response?.data?.detail || "Network error"));
     } finally {
       setActionLoading(null);
     }
@@ -79,7 +122,14 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
     return { cls: 'badge-green', label: `${entity.overall_confidence.toFixed(0)}% HIGH` };
   };
 
-  return (
+  
+    useEffect(() => {
+      if (selectedMatchId && cardRefs.current[selectedMatchId]) {
+        cardRefs.current[selectedMatchId].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, [selectedMatchId]);
+  
+    return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-glass)', backdropFilter: 'blur(16px)', borderRadius: '16px', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
       
       {/* Header */}
@@ -135,7 +185,8 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
               return (
                 <div 
                   key={entity.id} 
-                  className={`panel-card white-apple-card ${isSelected ? 'active' : ''}`}
+                  ref={el => cardRefs.current[entity.id] = el}
+                    className={`panel-card white-apple-card ${isSelected ? 'active' : ''}`}
                   onClick={() => onSelectMatch(entity.id)}
                   style={{ 
                     display: 'flex', flexDirection: 'column', gap: '0.75rem',
@@ -163,8 +214,8 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
 
                   {/* Evidence bars */}
                   <div style={{ display: 'flex', gap: 12, fontSize: 12 }}>
-                    <EvidenceBar label={t.spatial} value={entity.spatial_evidence} color="#3b82f6" />
-                    <EvidenceBar label={t.attribute} value={entity.attribute_evidence} color="#8b5cf6" />
+                    <EvidenceBar label={t.spatial} value={parseFloat(entity.confidence?.spatial_match) || 0} color="#3b82f6" />
+                    <EvidenceBar label={t.attribute} value={parseFloat(entity.confidence?.attribute_match) || 0} color="#8b5cf6" />
                   </div>
 
                   {/* Confidence reason */}
@@ -200,7 +251,7 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
 
                   {/* Owner details from attributes */}
                   {entity.attributes && (entity.attributes.owner_name || entity.attributes.municipal_owner) && (
-                    <div style={{ display: 'flex', gap: 8, fontSize: 12 }}>
+                    <div style={{ display: 'flex', gap: 8, fontSize: 12, marginBottom: 8 }}>
                       {entity.attributes.owner_name && (
                         <div style={{ flex: 1, padding: '6px 8px', borderRadius: 6, background: 'rgba(59,130,246,.08)', border: '1px solid rgba(59,130,246,.15)', color: 'var(--text-primary)' }}>
                           <span style={{ opacity: .6 }}>Cadastral: </span>
@@ -215,6 +266,60 @@ export default function ReviewQueue({ userRole, refreshKey, selectedMatchId, onS
                       )}
                     </div>
                   )}
+
+                  {/* AI Insight Section */}
+                  {aiInsights[entity.id] ? (
+                    <div style={{ marginBottom: 10, padding: '10px', borderRadius: '8px', background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1))', border: '1px solid rgba(168,85,247,0.2)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#a855f7', fontWeight: 'bold', fontSize: '12px', marginBottom: '4px' }}>
+                        <Zap size={14} /> Llama 3.2 Compliance Auditor
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '4px' }}>
+                        {aiInsights[entity.id].analysis}
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginTop: '6px' }}>
+                        <span style={{ color: aiInsights[entity.id].risk_level === 'High' ? '#ef4444' : '#f59e0b', fontWeight: 'bold' }}>Risk: {aiInsights[entity.id].risk_level}</span>
+                        <span style={{ color: '#10b981', fontWeight: 'bold' }}>Action: {aiInsights[entity.id].recommended_action}</span>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {/* Vision Insight Section */}
+                  {visionInsights[entity.id] ? (
+                    <div style={{ marginBottom: 10, padding: '10px', borderRadius: '8px', background: 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(59,130,246,0.1))', border: '1px solid rgba(16,185,129,0.2)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981', fontWeight: 'bold', fontSize: '12px', marginBottom: '4px' }}>
+                        <Shield size={14} /> Llama 3.2 Vision Reality Check
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '4px' }}>
+                        {visionInsights[entity.id].vision_analysis}
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginTop: '6px' }}>
+                        <span style={{ color: '#3b82f6', fontWeight: 'bold' }}>Type: {visionInsights[entity.id].building_type} ({visionInsights[entity.id].floor_count} Floors)</span>
+                        <span style={{ color: visionInsights[entity.id].discrepancy_found ? '#ef4444' : '#10b981', fontWeight: 'bold' }}>Discrepancy: {visionInsights[entity.id].discrepancy_found ? 'YES' : 'NO'}</span>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {/* AI Action Buttons */}
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: 10 }}>
+                    {!aiInsights[entity.id] && (
+                      <button 
+                        onClick={(e) => getAiInsight(e, entity.id)} 
+                        disabled={insightLoading === entity.id}
+                        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '6px', fontSize: '12px', background: 'rgba(168,85,247,0.1)', color: '#a855f7', border: '1px solid rgba(168,85,247,0.3)', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                      >
+                        {insightLoading === entity.id ? <Loader2 size={14} className="spin" /> : <Zap size={14} />}
+                        Analyze Risk
+                      </button>
+                    )}
+                    
+                    {!visionInsights[entity.id] && (
+                      <label style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '6px', fontSize: '12px', background: 'rgba(16,185,129,0.1)', color: '#10b981', border: '1px solid rgba(16,185,129,0.3)', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+                        {visionLoading === entity.id ? <Loader2 size={14} className="spin" /> : <Eye size={14} />}
+                        {visionLoading === entity.id ? 'Analyzing Photo...' : 'Upload Photo'}
+                        <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handlePhotoUpload(e, entity.id)} />
+                      </label>
+                    )}
+                  </div>
 
                   {/* Action buttons */}
                   <div style={{ display: 'flex', gap: 8, paddingTop: 6, marginTop: 2, borderTop: '1px solid var(--border-color)' }}>

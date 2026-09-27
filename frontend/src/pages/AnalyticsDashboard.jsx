@@ -3,13 +3,16 @@ import axios from 'axios';
 import { TrendingDown, AlertTriangle, Building, IndianRupee, ShieldAlert, Check } from 'lucide-react';
 import { translations } from '../translations';
 
+const getApiUrl = () => { const url = import.meta.env.VITE_API_URL; if (!url) return 'http://localhost:8000/api'; return url.endsWith('/api') ? url : url+'/api'; };
+const API = getApiUrl();
+
 export default function AnalyticsDashboard({ lang = 'en' }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const t = translations[lang]?.analytics || translations['en'].analytics;
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/reconciliation/financials')
+    axios.get(`${API}/reconciliation/financials`)
       .then(res => {
         setData(res.data);
         setLoading(false);

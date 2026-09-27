@@ -182,46 +182,50 @@ def get_geojson(db: Session = Depends(get_db)):
             
     return {"type": "FeatureCollection", "features": features}
 
+
+
+
+
+
 @router.get("/financials")
 def get_financials(db: Session = Depends(get_db)):
-    """
-    Calculates estimated property tax leakage based on SourceRecords.
-    """
+    from sqlalchemy import text
+    from src.models import models
+    count = db.query(models.LandEntity).count()
+    if count == 0:
+        return {
+            "ghost_buildings_identified": 0,
+            "potential_revenue_recovered": 0,
+            "unauthorized_encroachments": 0,
+            "pending_conflicts": 0,
+            "stats": {"auto_harmonized": 0, "manual_review": 0, "entity_type_conflict": 0}
+        }
+        
     query = text("""
-        SELECT COUNT(c.id), COALESCE(SUM((c.original_attributes->>'area_cad')::float), 0)
-        FROM source_records c
-        LEFT JOIN land_entities e ON c.canonical_entity_id = e.id
-        WHERE c.source_type = 'cadastral' AND e.id IS NULL
+        SELECT COUNT(id), COALESCE(SUM(CAST(COALESCE(original_attributes->>'area_sqm', original_attributes->>'area_cad', '0') AS float)), 0)
+        FROM source_records
+        WHERE source_type = 'cadastral' AND canonical_entity_id IS NULL
     """)
     result = db.execute(query).fetchone()
     
-    unregistered_buildings = result[0] if result else 0
+    ghost_buildings = result[0] if result else 0
     unregistered_area = result[1] if result else 0
     
-    base_tax = unregistered_buildings * 1200
-    area_tax = unregistered_area * 50
-    total_leakage = base_tax + area_tax
-
-    # Get conflict stats
-    stats_query = text("""
-        SELECT status, COUNT(id) FROM land_entities GROUP BY status
-    """)
-    stats_result = db.execute(stats_query).fetchall()
-    stats_dict = {row[0]: row[1] for row in stats_result}
+    # Realistic tax rate
+    revenue = unregistered_area * 4200
     
-    pending_conflicts = stats_dict.get("PENDING_REVIEW", 0)
+    # Get real stats from DB to match dashboard
+    auto_count = db.query(models.LandEntity).filter_by(status='AUTO_ACCEPT').count()
+    review_count = db.query(models.LandEntity).filter_by(status='PENDING_REVIEW').count()
+    conflict_count = db.query(models.LandEntity).filter_by(status='REJECTED').count()
     
     return {
-        "ghost_buildings_identified": unregistered_buildings,
-        "potential_revenue_recovered": total_leakage,
-        "pending_conflicts": pending_conflicts,
-        "stats": {
-            "auto_harmonized": stats_dict.get("AUTO_ACCEPT", 0),
-            "manual_review": stats_dict.get("PENDING_REVIEW", 0),
-            "entity_type_conflict": stats_dict.get("REJECTED", 0)
-        }
+        "ghost_buildings_identified": ghost_buildings,
+        "potential_revenue_recovered": revenue,
+        "unauthorized_encroachments": ghost_buildings,
+        "pending_conflicts": review_count,
+        "stats": {"auto_harmonized": auto_count, "manual_review": review_count, "entity_type_conflict": conflict_count}
     }
-
 @router.get("/case/{entity_id}")
 def get_audit_case(entity_id: int, db: Session = Depends(get_db)):
     """

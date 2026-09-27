@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FileDown, Printer, FileText, CheckCircle2 } from 'lucide-react';
 
+const getApiUrl = () => { const url = import.meta.env.VITE_API_URL; if (!url) return 'http://localhost:8000/api'; return url.endsWith('/api') ? url : url+'/api'; };
+const API = getApiUrl();
+
 export default function ExportCadastral() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // We can fetch from financials to get overall summary stats for the report
-    axios.get('http://localhost:8000/api/reconciliation/financials')
+    axios.get(`${API}/reconciliation/financials`)
       .then(res => {
         setStats(res.data);
         setLoading(false);

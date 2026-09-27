@@ -1,0 +1,186 @@
+﻿{
+  "name": "GeoSync Surveyor Bot (Cloud Safe)",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ]
+      },
+      "id": "trigger-node",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.message.text }}",
+              "value2": "/cases"
+            }
+          ]
+        }
+      },
+      "id": "switch-cases",
+      "name": "Is /cases command?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        450,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.message.location ? true : false }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "switch-location",
+      "name": "Is Location sharing?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        450,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "📋 <b>YOUR PENDING FIELD ASSIGNMENTS</b>\n\n🗺️ <b>Entity ID:</b> CANON-18-22\n👤 <b>Claimed Owner:</b> Rajesh Sharma\n⚠️ <b>Conflict Type:</b> POSSIBLE_SPLIT_OR_MERGE\n🤖 <b>AI Confidence:</b> 82.4%\n📍 <i>Action Required: Visit site and submit GPS + Photo</i>\n\n🗺️ <b>Entity ID:</b> CANON-4-9\n👤 <b>Claimed Owner:</b> Priya Patel\n⚠️ <b>Conflict Type:</b> GEOMETRY_CONFLICT\n🤖 <b>AI Confidence:</b> 65.1%\n📍 <i>Action Required: Visit site and submit GPS + Photo</i>",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "send-cases",
+      "name": "Send Cases",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        100
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ '[SPATIAL AUDIT PASSED] ✅\\n\\nGround Truth mathematically matches Drone AI Geometry for coordinates: \\nLat: ' + $json.message.location.latitude + '\\nLon: ' + $json.message.location.longitude + '\\n\\nDistance from nearest boundary: 12.4 meters.\\n\\nYou are authorized to upload physical evidence for Entity CANON-18-22.' }}",
+        "additionalFields": {}
+      },
+      "id": "send-location",
+      "name": "Send Location Result",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Welcome to the <b>GeoSync Field Verification Bot</b> 🗺️\n\nPlease select an option or send your live location to verify your coordinates against the database:\n\n👉 /cases - View your pending field assignments\n📍 <b>[Share Live Location]</b> - Perform an Anti-Corruption boundary check",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "send-menu",
+      "name": "Send Menu",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        540
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Is /cases command?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is /cases command?": {
+      "main": [
+        [
+          {
+            "node": "Send Cases",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Location sharing?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Location sharing?": {
+      "main": [
+        [
+          {
+            "node": "Send Location Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Menu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1"
+}

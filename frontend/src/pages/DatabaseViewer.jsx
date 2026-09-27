@@ -2,11 +2,7 @@ import { useState, useEffect } from 'react';
 import { Database, Search, Filter, ArrowUpDown } from 'lucide-react';
 import axios from 'axios';
 
-const getApiUrl = () => {
-  const url = import.meta.env.VITE_API_URL;
-  if (!url) return 'http://localhost:8000/api';
-  return url.endsWith('/api') ? url : `${url}/api`;
-};
+const getApiUrl = () => { const url = import.meta.env.VITE_API_URL; if (!url) return 'http://localhost:8000/api'; return url.endsWith('/api') ? url : url+'/api'; };
 const API = getApiUrl();
 
 export default function DatabaseViewer() {

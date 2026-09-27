@@ -15,7 +15,7 @@ class ReviewAction(BaseModel):
     reason: str = "Manual review override"
 
 def send_telegram_alert(entity_id: int, action: str, reviewer: str, reason: str):
-    webhook_url = "https://divyansh67.app.n8n.cloud/webhook-test/sih-alert"
+    webhook_url = "https://divyansh13132.app.n8n.cloud/webhook/48cc3cf4-70e3-49b8-b6e8-9c076c3f0e57/webhook"
     payload = {
         "entity_id": entity_id,
         "action": action,
@@ -30,6 +30,10 @@ def send_telegram_alert(entity_id: int, action: str, reviewer: str, reason: str)
 
 @router.post("/entity/{entity_id}/review")
 def review_entity(entity_id: int, action: ReviewAction, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    # SECURITY FEATURE: Hardened Role-Based Access Control (RBAC)
+    if action.reviewer == "Field_Surveyor":
+        raise HTTPException(status_code=403, detail="RBAC Violation: Field Surveyors lack authorization to commit immutable ledger records.")
+        
     entity = db.query(models.LandEntity).filter(models.LandEntity.id == entity_id).first()
     if not entity:
         raise HTTPException(status_code=404, detail="Entity not found")

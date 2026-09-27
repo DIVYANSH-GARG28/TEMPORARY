@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "TerraOps_Govt_Field_Portal",
   "nodes": [
     {
@@ -39,7 +39,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://clear-sides-drive.loca.lt/api/telegram/location",
+        "url": "http://localhost:8000/api/telegram/location",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"latitude\": {{ $json.message.location ? $json.message.location.latitude : $json.message.venue.location.latitude }},\n  \"longitude\": {{ $json.message.location ? $json.message.location.longitude : $json.message.venue.location.longitude }},\n  \"user_id\": \"{{ $json.message.from.id }}\"\n}",
@@ -99,7 +99,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://clear-sides-drive.loca.lt/api/telegram/evidence",
+        "url": "http://localhost:8000/api/telegram/evidence",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -124,7 +124,7 @@
     },
     {
       "parameters": {
-        "chatId": "={{ $json.message.from.id }}",
+        "chatId": "={{ $json.chat_id }}",
         "text": "[EVIDENCE ACCEPTED]\nPhysical evidence encrypted and appended to Audit Case.\nAI Confidence Score dynamically adjusted."
       },
       "id": "telegram-photo-success",
@@ -160,7 +160,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "={{ 'https://clear-sides-drive.loca.lt/api/telegram/cases?user_id=' + $json.message.from.id }}",
+        "url": "={{ 'http://localhost:8000/api/telegram/cases?user_id=' + $json.message.from.id }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -182,7 +182,7 @@
     },
     {
       "parameters": {
-        "chatId": "={{ $node[\"Telegram Trigger\"].json.message.from.id }}",
+        "chatId": "={{ $json.chat_id }}",
         "text": "={{ $json.message }}"
       },
       "id": "telegram-cases-response",
@@ -197,7 +197,7 @@
     {
       "parameters": {
         "chatId": "={{ $json.message.from.id }}",
-        "text": "\ud83c\udfdb\ufe0f **TERRAOPS: Govt Field Portal** \ud83c\udfdb\ufe0f\n\nWelcome, Field Officer.\n\nCommands:\n/cases - View your assigned high-priority audits\n\nTo verify a site:\n1. Drop a Live Location Pin\n2. Upload Photographic Evidence\n\n*All actions are cryptographically logged to the Audit Ledger.*"
+        "text": "\ud83c\udfdb\ufe0f TERRAOPS: Govt Field Portal \ud83c\udfdb\ufe0f\n\nWelcome, Field Officer.\n\nCommands:\n/cases - View your assigned high-priority audits\n\nTo verify a site:\n1. Drop a Live Location Pin\n2. Upload Photographic Evidence\n\nAll actions are cryptographically logged to the Audit Ledger."
       },
       "id": "telegram-welcome",
       "name": "Send Welcome Menu",
@@ -310,3 +310,4 @@
     }
   }
 }
+

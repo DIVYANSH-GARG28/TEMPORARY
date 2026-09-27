@@ -3,8 +3,10 @@ import { MapContainer, TileLayer, GeoJSON, useMap, useMapEvents, LayersControl }
 import 'leaflet/dist/leaflet.css';
 import { Play, Search, Loader2, Trash2, MapPin, Navigation, Layers, Zap } from 'lucide-react';
 import axios from 'axios';
+import { translations } from '../translations';
 
-const API = 'http://localhost:8000/api';
+const getApiUrl = () => { const url = import.meta.env.VITE_API_URL; if (!url) return 'http://localhost:8000/api'; return url.endsWith('/api') ? url : url+'/api'; };
+const API = getApiUrl();
 
 // ─── Map sub-components ────────────────────────────────────────
 
@@ -36,11 +38,16 @@ function FlyToFeature({ geojson, selectedId }) {
   useEffect(() => {
     if (!selectedId || !geojson?.features) return;
     import('leaflet').then(L => {
-      const hits = geojson.features.filter(f => f.properties.id === selectedId);
+      const hits = geojson.features.filter(f => String(f.properties.id) === String(selectedId));
+        console.log("FlyToFeature hits:", hits.length, "for ID:", selectedId);
       if (!hits.length) return;
       const layer = L.geoJSON({ type: 'FeatureCollection', features: hits });
       const bounds = layer.getBounds();
-      if (bounds.isValid()) map.flyToBounds(bounds, { padding: [100, 100], duration: 1.2 });
+      if (bounds.isValid()) {
+          setTimeout(() => {
+            map.fitBounds(bounds, { padding: [40, 40], maxZoom: 19 });
+          }, 100);
+        }
     });
   }, [selectedId, geojson, map]);
   return null;
@@ -73,19 +80,18 @@ function styleFeature(feature, selectedId) {
   const { status, source, id } = feature.properties;
   const fill = STATUS_COLORS[status] || 'rgba(255,255,255,0.15)';
   const stroke = SOURCE_COLORS[source] || '#fff';
-  const isSelected = selectedId && id === selectedId;
-  const isDimmed = selectedId && id !== selectedId;
+  const isSelected = selectedId && String(id) === String(selectedId);
+  const isDimmed = selectedId && String(id) !== String(selectedId);
 
-  if (isSelected) return { fillColor: fill, fillOpacity: 0.7, color: '#fff', weight: 3.5, opacity: 1 };
-  if (isDimmed) return { fillColor: fill, fillOpacity: 0.06, color: stroke, weight: 0.8, opacity: 0.25, dashArray: source === 'municipal' ? '5,4' : '' };
-  return { fillColor: fill, fillOpacity: 0.35, color: stroke, weight: 1.5, opacity: 0.85, dashArray: source === 'municipal' ? '5,4' : '' };
+  if (isSelected) return { fillColor: '#0ea5e9', fillOpacity: 0.9, color: '#3b82f6', weight: 4, opacity: 1, dashArray: '' };
+  
+  return { fillColor: fill, fillOpacity: 0.45, color: stroke, weight: 2, opacity: 0.9, dashArray: source === 'municipal' ? '5,4' : '' };
 }
 
 // ─── Main component ────────────────────────────────────────────
 
-import { translations } from '../translations';
 
-export default function ReconciliationMap({ onMatchComplete, selectedMatchId, refreshKey, lang = 'en' }) {
+export default function ReconciliationMap({ onMatchComplete, selectedMatchId, onSelectMatch, refreshKey, lang = 'en' }) {
   const [geojson, setGeojson] = useState(null);
   const [bounds, setBounds] = useState(null);
   const [isMatching, setIsMatching] = useState(false);
@@ -99,6 +105,17 @@ export default function ReconciliationMap({ onMatchComplete, selectedMatchId, re
   const [searching, setSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const searchTimer = useRef(null);
+  const geoJsonRef = useRef(null);
+
+  useEffect(() => {
+    if (geoJsonRef.current && geojson) {
+      geoJsonRef.current.eachLayer(layer => {
+        if (layer.feature) {
+          layer.setStyle(styleFeature(layer.feature, selectedMatchId));
+        }
+      });
+    }
+  }, [selectedMatchId, geojson]);
 
   // Toast state
   const [toast, setToast] = useState(null);
@@ -107,7 +124,7 @@ export default function ReconciliationMap({ onMatchComplete, selectedMatchId, re
   // ── Data fetching ──
   const fetchGeoJSON = useCallback(async () => {
     try {
-      const { data } = await axios.get(`${API}/reconciliation/geojson`);
+      const { data } = await axios.get(`${API}/reconciliation/geojson?t=${Date.now()}`);
       setGeojson(data);
     } catch { /* silent */ }
   }, []);
@@ -190,6 +207,7 @@ export default function ReconciliationMap({ onMatchComplete, selectedMatchId, re
   const onEachFeature = (feature, layer) => {
     const p = feature.properties;
     const conf = typeof p.confidence === 'number' ? p.confidence.toFixed(1) : p.confidence;
+    layer.on('click', () => { if (onSelectMatch) onSelectMatch(p.id); });
     layer.bindPopup(`
       <div style="font-family:'Inter',system-ui,sans-serif;min-width:200px;line-height:1.6">
         <div style="font-weight:700;font-size:14px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin-bottom:6px">Entity #${p.id}</div>
@@ -311,7 +329,7 @@ export default function ReconciliationMap({ onMatchComplete, selectedMatchId, re
 
           {geojson?.features?.length > 0 && (
             <>
-              <GeoJSON key={`${featureCount}-${selectedMatchId || ''}-${refreshKey}`} data={geojson} style={f => styleFeature(f, selectedMatchId)} onEachFeature={onEachFeature} />
+              <GeoJSON ref={geoJsonRef} key={`${featureCount}-${refreshKey}`} data={geojson} style={f => styleFeature(f, selectedMatchId)} onEachFeature={onEachFeature} />
               <FitBounds geojson={geojson} />
               <FlyToFeature geojson={geojson} selectedId={selectedMatchId} />
             </>

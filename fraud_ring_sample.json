@@ -1,0 +1,1611 @@
+{
+  "nodes": [
+    {
+      "id": "Apex Real Estate",
+      "group": 1,
+      "val": 25,
+      "name": "Apex Real Estate",
+      "type": "corp"
+    },
+    {
+      "id": "Vanguard Holdings",
+      "group": 1,
+      "val": 25,
+      "name": "Vanguard Holdings",
+      "type": "corp"
+    },
+    {
+      "id": "Meridian Shell Corp",
+      "group": 1,
+      "val": 25,
+      "name": "Meridian Shell Corp",
+      "type": "corp"
+    },
+    {
+      "id": "Summit Ventures",
+      "group": 1,
+      "val": 25,
+      "name": "Summit Ventures",
+      "type": "corp"
+    },
+    {
+      "id": "Nexus Properties LLC",
+      "group": 1,
+      "val": 25,
+      "name": "Nexus Properties LLC",
+      "type": "corp"
+    },
+    {
+      "id": "Parcel_8001",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8001",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8002",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8002",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8003",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8003",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8004",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8004",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8005",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8005",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8006",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8006",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8007",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8007",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8008",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8008",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8009",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8009",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8010",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8010",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8011",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8011",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8012",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8012",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8013",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8013",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8014",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8014",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8015",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8015",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8016",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8016",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8017",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8017",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8018",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8018",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8019",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8019",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8020",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8020",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8021",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8021",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8022",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8022",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8023",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8023",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8024",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8024",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8025",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8025",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8026",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8026",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8027",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8027",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8028",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8028",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8029",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8029",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8030",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8030",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8031",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8031",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8032",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8032",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8033",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8033",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8034",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8034",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8035",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8035",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8036",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8036",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8037",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8037",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8038",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8038",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8039",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8039",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8040",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8040",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8041",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8041",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8042",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8042",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8043",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8043",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8044",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8044",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8045",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8045",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8046",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8046",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8047",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8047",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8048",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8048",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8049",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8049",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8050",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8050",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8051",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8051",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8052",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8052",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8053",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8053",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8054",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8054",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8055",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8055",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8056",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8056",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8057",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8057",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8058",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8058",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8059",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8059",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8060",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8060",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8061",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8061",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8062",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8062",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8063",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8063",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8064",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8064",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8065",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8065",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8066",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8066",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8067",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8067",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8068",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8068",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8069",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8069",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8070",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8070",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8071",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8071",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8072",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8072",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8073",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8073",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8074",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8074",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8075",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8075",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8076",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8076",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8077",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8077",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8078",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8078",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8079",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8079",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8080",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8080",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8081",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8081",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8082",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8082",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8083",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8083",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8084",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8084",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8085",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8085",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8086",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8086",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8087",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8087",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8088",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8088",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8089",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8089",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8090",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8090",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8091",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8091",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8092",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8092",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8093",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8093",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8094",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8094",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8095",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8095",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8096",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8096",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8097",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8097",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8098",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8098",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8099",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8099",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8100",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8100",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8101",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8101",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8102",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8102",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8103",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8103",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8104",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8104",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8105",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8105",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8106",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8106",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8107",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8107",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8108",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8108",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8109",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8109",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8110",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8110",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8111",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8111",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8112",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8112",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8113",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8113",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8114",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8114",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8115",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8115",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8116",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8116",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8117",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8117",
+      "type": "property",
+      "fraud": false
+    },
+    {
+      "id": "Parcel_8118",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8118",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8119",
+      "group": 2,
+      "val": 6,
+      "name": "Land Parcel #8119",
+      "type": "property",
+      "fraud": true
+    },
+    {
+      "id": "Parcel_8120",
+      "group": 3,
+      "val": 6,
+      "name": "Land Parcel #8120",
+      "type": "property",
+      "fraud": false
+    }
+  ],
+  "links": [
+    {
+      "source": "Parcel_8001",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8002",
+      "target": "Apex Real Estate",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8003",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8004",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8005",
+      "target": "Meridian Shell Corp",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8006",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8007",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8008",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8009",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8010",
+      "target": "Meridian Shell Corp",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8011",
+      "target": "Nexus Properties LLC",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8012",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8013",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8014",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8015",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8016",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8017",
+      "target": "Nexus Properties LLC",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8018",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8019",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8020",
+      "target": "Nexus Properties LLC",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8021",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8022",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8023",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8024",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8025",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8026",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8027",
+      "target": "Meridian Shell Corp",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8028",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8029",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8030",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8031",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8032",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8033",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8034",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8035",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8036",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8037",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8038",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8039",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8040",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8041",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8042",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8043",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8044",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8045",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8046",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8047",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8048",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8049",
+      "target": "Meridian Shell Corp",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8050",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8051",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8052",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8053",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8054",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8055",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8056",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8057",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8058",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8059",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8060",
+      "target": "Nexus Properties LLC",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8061",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8062",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8063",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8064",
+      "target": "Meridian Shell Corp",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8065",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8066",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8067",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8068",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8069",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8070",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8071",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8072",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8073",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8074",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8075",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8076",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8077",
+      "target": "Nexus Properties LLC",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8078",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8079",
+      "target": "Meridian Shell Corp",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8080",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8081",
+      "target": "Nexus Properties LLC",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8082",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8083",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8084",
+      "target": "Meridian Shell Corp",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8085",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8086",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8087",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8088",
+      "target": "Apex Real Estate",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8089",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8090",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8091",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8092",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8093",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8094",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8095",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8096",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8097",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8098",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8099",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8100",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8101",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8102",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8103",
+      "target": "Apex Real Estate",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8104",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8105",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8106",
+      "target": "Nexus Properties LLC",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8107",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8108",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8109",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8110",
+      "target": "Vanguard Holdings",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8111",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8112",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8113",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8114",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8115",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8116",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8117",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Parcel_8118",
+      "target": "Meridian Shell Corp",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8119",
+      "target": "Nexus Properties LLC",
+      "value": 4
+    },
+    {
+      "source": "Parcel_8120",
+      "target": "Summit Ventures",
+      "value": 1
+    },
+    {
+      "source": "Meridian Shell Corp",
+      "target": "Nexus Properties LLC",
+      "value": 6
+    },
+    {
+      "source": "Apex Real Estate",
+      "target": "Summit Ventures",
+      "value": 2
+    }
+  ]
+}

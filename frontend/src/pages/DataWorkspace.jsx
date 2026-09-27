@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Upload, FileText, AlertTriangle, CheckCircle, Loader2, Database, Cpu, Map as MapIcon, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 
+const getApiUrl = () => { const url = import.meta.env.VITE_API_URL; if (!url) return 'http://localhost:8000/api'; return url.endsWith('/api') ? url : url+'/api'; };
+const API = getApiUrl();
+
 export default function DataWorkspace() {
   const [file, setFile] = useState(null);
   const [name, setName] = useState('');
@@ -32,7 +35,7 @@ export default function DataWorkspace() {
     setStatus({ type: 'info', message: 'Uploading and running Topology QA...' });
 
     try {
-      await axios.post('http://localhost:8000/api/datasets/', formData, {
+      await axios.post(`${API}/datasets/`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setStatus({ type: 'success', message: 'Dataset uploaded and validated successfully!' });
@@ -56,7 +59,7 @@ export default function DataWorkspace() {
     setTimeout(() => setEngineStep(4), 4500); // Conflict Resolution
     
     try {
-      const res = await axios.post('http://localhost:8000/api/reconciliation/trigger');
+      const res = await axios.post(`${API}/reconciliation/trigger`);
       setTimeout(() => {
         setEngineStep(5);
         setEngineState('complete');
@@ -191,7 +194,7 @@ function StepItem({ number, title, active, current }) {
         width: '32px', height: '32px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center',
         background: current ? 'var(--accent-primary)' : active ? 'var(--status-green)' : 'var(--bg-secondary)',
         border: `2px solid ${current ? 'var(--accent-primary)' : active ? 'var(--status-green)' : 'var(--border-color)'}`,
-        color: '#fff', fontWeight: 'bold', fontSize: '0.9rem',
+        color: (current || active) ? '#fff' : 'var(--text-primary)', fontWeight: 'bold', fontSize: '0.9rem',
         boxShadow: current ? '0 0 15px rgba(59, 130, 246, 0.5)' : 'none'
       }}>
         {active && !current ? <CheckCircle size={16} /> : number}

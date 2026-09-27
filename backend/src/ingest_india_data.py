@@ -87,17 +87,9 @@ def ingest_data():
     nodes = {node['id']: (node['lon'], node['lat']) for node in osm_data.get('elements', []) if node['type'] == 'node'}
     ways = [way for way in osm_data.get('elements', []) if way['type'] == 'way']
     
-    print("Clearing old data from database...")
+    print('Skipping delete')
     Base.metadata.create_all(bind=engine)
     with Session(engine) as db:
-        # Clear existing tables (cascade will fail if we just delete, but we can delete in order)
-        db.query(models.AuditLog).delete()
-        db.query(models.ReviewTask).delete()
-        db.query(models.MatchResult).delete()
-        db.query(models.ParcelObservation).delete()
-        db.query(models.Dataset).delete()
-        db.commit()
-
         # Create new datasets
         cad_ds = models.Dataset(name="Real Cadastral India", source_type="cadastral", status="processed")
         mun_ds = models.Dataset(name="Real Municipal India", source_type="municipal", status="processed")
@@ -122,9 +114,10 @@ def ingest_data():
                     # Create Cadastral Observation (Ground Truth with tiny jitter)
                     cad_poly = perturb_geometry(poly, translation_std=0.00001, vertex_noise_std=0.000005)
                     cad_poly_3857 = transform(project_to_3857, cad_poly)
-                    cad_obs = models.ParcelObservation(
+                    cad_obs = models.SourceRecord(
                         dataset_id=cad_ds.id,
-                        source_id=f"CAD-{i}",
+                    source_type='cadastral',
+                        source_record_id=f"CAD-{i}",
                         owner_name=owner,
                         land_use=land_use,
                         recorded_area=cad_poly_3857.area,
@@ -136,9 +129,10 @@ def ingest_data():
                     # Create Municipal Observation (with higher error to trigger reconciliation matches)
                     mun_poly = perturb_geometry(poly, translation_std=0.0002, vertex_noise_std=0.00005)
                     mun_poly_3857 = transform(project_to_3857, mun_poly)
-                    mun_obs = models.ParcelObservation(
+                    mun_obs = models.SourceRecord(
                         dataset_id=mun_ds.id,
-                        source_id=f"MUN-{i}",
+                    source_type='municipal',
+                        source_record_id=f"MUN-{i}",
                         owner_name=owner.upper() if random.random() > 0.5 else owner,
                         land_use=land_use,
                         recorded_area=mun_poly_3857.area,

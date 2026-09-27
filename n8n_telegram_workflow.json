@@ -1,0 +1,61 @@
+﻿{
+  "name": "GeoSync Telegram Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sih-alert",
+        "options": {}
+      },
+      "id": "e4b6c3a2-1b8f-4d9a-9c7e-2f5b8d1a6e9c",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "sih-alert"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_CHAT_ID",
+        "text": "={{ '🚨 *GeoSync Alert* 🚨\\n\\n*Entity ID:* ' + $json.body.entity_id + '\\n*Action:* ' + $json.body.action + '\\n*Actor:* ' + $json.body.actor + '\\n*Reason:* ' + $json.body.reason }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "a1b2c3d4-e5f6-4a5b-8c7d-9e0f1a2b3c4d",
+      "name": "Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "1"
+}

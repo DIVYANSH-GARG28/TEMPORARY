@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Layers, CheckCircle, AlertTriangle, XCircle, Loader2, TrendingUp, Shield, Zap, BarChart3 } from 'lucide-react';
 import axios from 'axios';
+import { translations } from '../translations';
 
-const API = 'http://localhost:8000/api';
+const getApiUrl = () => { const url = import.meta.env.VITE_API_URL; if (!url) return 'http://localhost:8000/api'; return url.endsWith('/api') ? url : url+'/api'; };
+const API = getApiUrl();
 
 // Animated Counter Component
 const AnimatedCounter = ({ value, prefix = '', suffix = '' }) => {
@@ -34,7 +36,6 @@ const AnimatedCounter = ({ value, prefix = '', suffix = '' }) => {
   return <>{prefix}{count.toLocaleString('en-IN')}{suffix}</>;
 };
 
-import { translations } from '../translations';
 
 export default function Dashboard({ lang = 'en' }) {
   const [loading, setLoading] = useState(true);

@@ -3,7 +3,8 @@ import { Search, MapPin, CheckCircle, AlertTriangle, ShieldCheck } from 'lucide-
 import { translations } from '../translations';
 import axios from 'axios';
 
-const API = 'http://localhost:8000/api';
+const getApiUrl = () => { const url = import.meta.env.VITE_API_URL; if (!url) return 'http://localhost:8000/api'; return url.endsWith('/api') ? url : url+'/api'; };
+const API = getApiUrl();
 
 export default function CitizenPortal({ lang = 'en' }) {
   const [propertyId, setPropertyId] = useState('');
@@ -45,7 +46,23 @@ export default function CitizenPortal({ lang = 'en' }) {
         </p>
       </div>
 
-      <div className="panel-card" style={{ padding: '2rem', display: 'flex', gap: '1rem' }}>
+        <div style={{
+          background: '#fef3c7',
+          color: '#92400e',
+          padding: '1rem',
+          borderRadius: '4px',
+          boxShadow: '2px 2px 5px rgba(0,0,0,0.1)',
+          transform: 'rotate(-2deg)',
+          display: 'inline-block',
+          margin: '0 auto 2rem',
+          borderLeft: '4px solid #f59e0b',
+          maxWidth: '500px',
+          fontFamily: '"Comic Sans MS", "Chalkboard SE", sans-serif'
+        }}>
+          <strong>📌 Future Scope (Aadhaar Integration):</strong> This G2C Portal will be integrated with <strong>DigiLocker</strong> to securely pull <strong>Aadhaar</strong> data for instant, biometric-backed property linking.<br/><br/><em>(Demo: Type <strong>123456789</strong> below to see how a verified Aadhaar property card will look)</em>
+        </div>
+
+        <div className="panel-card" style={{ padding: '2rem', display: 'flex', gap: '1rem' }}>
         <input 
           type="text" 
           placeholder={t.placeholder}

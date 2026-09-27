@@ -1,5 +1,27 @@
 export const translations = {
   en: {
+    connectome: {
+      analyzing: "Analyzing Graph...",
+      execute: "Execute AI Discovery",
+      howItWorks: "How it Works",
+      desc1: "Graph analytics detect hidden beneficial owners across shell companies.",
+      desc2: "Nodes are people/entities. Edges are financial links.",
+      addManual: "Add Manual Node",
+      owner: "Beneficial Owner",
+      propId: "Property ID",
+      flag: "Flag Suspicious",
+      addBtn: "Add to Graph",
+      title: "FlyWire AI Connectome",
+      subtitle: "Deep learning spatial graph neural network processing...",
+      analyze: "Run Graph Analysis",
+      upload: "Upload Drone Data",
+      aiInsight: "AI Graph Insight",
+      nodes: "Nodes",
+      edges: "Edges",
+      nodeId: "Node ID",
+      connections: "Connections",
+      riskLevel: "Risk Level"
+    },
     sidebar: {
       core: "CORE MODULES",
       dashboard: "System Dashboard",
@@ -86,6 +108,28 @@ export const translations = {
     }
   },
   hi: {
+    connectome: {
+      analyzing: "ग्राफ विश्लेषण कर रहा है...",
+      execute: "एआई डिस्कवरी चलाएं",
+      howItWorks: "यह कैसे काम करता है",
+      desc1: "ग्राफ एनालिटिक्स शेल कंपनियों के छिपे हुए मालिकों का पता लगाते हैं।",
+      desc2: "नोड्स लोग/संस्थाएं हैं। किनारे वित्तीय लिंक हैं।",
+      addManual: "मैनुअल नोड जोड़ें",
+      owner: "लाभार्थी मालिक",
+      propId: "संपत्ति ID",
+      flag: "संदिग्ध के रूप में चिह्नित करें",
+      addBtn: "ग्राफ में जोड़ें",
+      title: "फ्लाइवायर एआई कनेक्टोम",
+      subtitle: "डीप लर्निंग स्थानिक ग्राफ न्यूरल नेटवर्क प्रोसेसिंग...",
+      analyze: "ग्राफ विश्लेषण चलाएं",
+      upload: "ड्रोन डेटा अपलोड करें",
+      aiInsight: "एआई ग्राफ अंतर्दृष्टि",
+      nodes: "नोड्स",
+      edges: "किनारे (Edges)",
+      nodeId: "नोड ID",
+      connections: "कनेक्शन",
+      riskLevel: "जोखिम स्तर"
+    },
     sidebar: {
       core: "मुख्य मॉड्यूल",
       dashboard: "सिस्टम डैशबोर्ड",
@@ -172,6 +216,28 @@ export const translations = {
     }
   },
   te: {
+    connectome: {
+      analyzing: "గ్రాఫ్‌ను విశ్లేషిస్తోంది...",
+      execute: "ఏఐ డిస్కవరీ రన్ చేయండి",
+      howItWorks: "ఇది ఎలా పనిచేస్తుంది",
+      desc1: "షెల్ కంపెనీల వెనుక ఉన్న నిజమైన యజమానులను గ్రాఫ్ అనాలిటిక్స్ గుర్తిస్తుంది.",
+      desc2: "నోడ్స్ వ్యక్తులు/సంస్థలు. ఎడ్జెస్ ఆర్థిక లింకులు.",
+      addManual: "మాన్యువల్ నోడ్‌ను జోడించండి",
+      owner: "నిజమైన యజమాని",
+      propId: "ఆస్తి ID",
+      flag: "అనుమానాస్పదంగా గుర్తించండి",
+      addBtn: "గ్రాఫ్‌కి జోడించండి",
+      title: "ఫ్లైవైర్ ఏఐ కనెక్టోమ్",
+      subtitle: "డీప్ లెర్నింగ్ స్పేషియల్ గ్రాఫ్ న్యూరల్ నెట్‌వర్క్ ప్రాసెసింగ్...",
+      analyze: "గ్రాఫ్ అనాలిసిస్ రన్ చేయండి",
+      upload: "డ్రోన్ డేటా అప్‌లోడ్ చేయండి",
+      aiInsight: "ఏఐ గ్రాఫ్ ఇన్‌సైట్",
+      nodes: "నోడ్స్",
+      edges: "ఎడ్జెస్",
+      nodeId: "నోడ్ ID",
+      connections: "కనెక్షన్స్",
+      riskLevel: "రిస్క్ లెవెల్"
+    },
     sidebar: {
       core: "కోర్ మాడ్యూల్స్",
       dashboard: "సిస్టమ్ డాష్‌బోర్డ్",
